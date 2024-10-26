@@ -184,7 +184,7 @@ export function LandingPage() {
                 },
               ].map((testimonial, index) => (
                 <div key={index} className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                  <p className="text-base sm:text-lg mb-4">"{testimonial.quote}"</p>
+                  <p className="text-base sm:text-lg mb-4">&apos;{testimonial.quote}&apos;</p>
                   <p className="text-sm sm:text-base font-semibold">{testimonial.author}</p>
                 </div>
               ))}

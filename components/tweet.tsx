@@ -22,7 +22,7 @@ export default function Tweet() {
               <span className="text-gray-500 text-[15px]">@rasmickyy · Oct 16</span>
             </div>
             <p className="mt-1 text-[15px] leading-normal">
-              man y'all gotta put me on where to go and what to do at sf... gonna be there oct 22-25
+              man y&apos;all gotta put me on where to go and what to do at sf... gonna be there oct 22-25
             </p>
             <div className="mt-3 flex items-center justify-between text-gray-500">
               <div className="flex items-center space-x-4">

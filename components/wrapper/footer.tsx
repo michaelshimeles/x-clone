@@ -2,6 +2,7 @@
 import { useForm } from 'react-hook-form';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import Link from 'next/link';
 
 export default function Footer() {
     const {
@@ -70,7 +71,7 @@ export default function Footer() {
                                         <a target="_blank" href="/" rel="noopener noreferrer" className="  transition hover:opacity-75"> Docs </a>
                                     </li>
                                     <li>
-                                        <a href="/" className="  transition hover:opacity-75"> Methodology </a>
+                                        <Link href="/" className="  transition hover:opacity-75"> Methodology </Link>
                                     </li>
                                 </ul>
                             </div>

@@ -8,7 +8,7 @@ export default function PostInput() {
 
   // Adjust height as the user types
   useEffect(() => {
-    const textarea = textareaRef.current
+    const textarea: any = textareaRef.current
     if (!textarea) return
 
     const handleInput = () => {
