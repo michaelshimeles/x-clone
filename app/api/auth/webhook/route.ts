@@ -1,5 +1,3 @@
-import { userCreate } from "@/utils/data/user/userCreate";
-import { userUpdate } from "@/utils/data/user/userUpdate";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -58,13 +56,7 @@ export async function POST(req: Request) {
   switch (eventType) {
     case "user.created":
       try {
-        await userCreate({
-          email: payload?.data?.email_addresses?.[0]?.email_address,
-          first_name: payload?.data?.first_name,
-          last_name: payload?.data?.last_name,
-          profile_image_url: payload?.data?.profile_image_url,
-          user_id: payload?.data?.id,
-        });
+        // user create
 
         return NextResponse.json({
           status: 200,
@@ -80,13 +72,7 @@ export async function POST(req: Request) {
 
     case "user.updated":
       try {
-        await userUpdate({
-          email: payload?.data?.email_addresses?.[0]?.email_address,
-          first_name: payload?.data?.first_name,
-          last_name: payload?.data?.last_name,
-          profile_image_url: payload?.data?.profile_image_url,
-          user_id: payload?.data?.id,
-        });
+        // user update
 
         return NextResponse.json({
           status: 200,
