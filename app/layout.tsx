@@ -71,12 +71,12 @@ export default function RootLayout({
                       <XLogo />
                       <nav>
                         <NavItem icon={<Home />} label="Home" path="/" />
-                        <NavItem icon={<Hash />} label="Explore" path="/"/>
-                        <NavItem icon={<Bell />} label="Notifications" path="/"/>
-                        <NavItem icon={<Mail />} label="Messages" path="/"/>
-                        <NavItem icon={<Bookmark />} label="Bookmarks" path="/"/>
-                        <NavItem icon={<User />} label="Profile" path="/profile"/>
-                        <NavItem icon={<MoreHorizontal />} label="More" path="/"/>
+                        <NavItem icon={<Hash />} label="Explore" path="/" />
+                        <NavItem icon={<Bell />} label="Notifications" path="/" />
+                        <NavItem icon={<Mail />} label="Messages" path="/" />
+                        <NavItem icon={<Bookmark />} label="Bookmarks" path="/" />
+                        <NavItem icon={<User />} label="Profile" path="/profile" />
+                        <NavItem icon={<MoreHorizontal />} label="More" path="/" />
                       </nav>
                       <button className="bg-blue-400 text-white rounded-full py-3 px-4 font-bold mt-4">
                         Post
@@ -160,7 +160,11 @@ function ExploreSection() {
 };
 
 
-function NavItem({ icon, label, path }) {
+function NavItem({ icon, label, path }: {
+  icon: any,
+  label: string,
+  path: string
+}) {
   return (
     <a
       href={path}
