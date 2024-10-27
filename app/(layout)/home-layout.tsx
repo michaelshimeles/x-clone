@@ -13,9 +13,22 @@ export default function HomeLayout({
 }) {
   const pathname = usePathname()
   const isSignInPage = pathname === '/account'
+  const isMessagesPage = pathname === '/messages'
 
   if (isSignInPage) {
     return <>{children}</>
+  }
+
+  if (isMessagesPage) {
+    return (
+      <div className="flex justify-center bg-white text-black min-h-screen">
+        <div className="flex w-full max-w-[1600px]">
+          {/* Left Sidebar */}
+          <LeftSidebar />
+          {children}
+        </div>
+      </div>
+    )
   }
   return (
     <div className="flex justify-center bg-white text-black min-h-screen">

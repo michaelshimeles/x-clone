@@ -35,7 +35,7 @@ const Sidebar = () => {
           <NavItem icon={<Home size={28} />} label="Home" path="/" />
           <NavItem icon={<Hash size={28} />} label="Explore" path="/explore" />
           <NavItem icon={<Bell size={28} />} label="Notifications" path="/notifications" />
-          <NavItem icon={<Mail size={28} />} label="Messages" path="/" />
+          <NavItem icon={<Mail size={28} />} label="Messages" path="/messages" />
           <NavItem icon={<Bookmark size={28} />} label="Bookmarks" path="/bookmarks" />
           <NavItem icon={<User size={28} />} label="Profile" path="/profile" />
           <NavItem icon={<MoreHorizontal size={28} />} label="More" path="/" />
