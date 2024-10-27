@@ -9,6 +9,7 @@ const UserInfo = () => {
       <img
         src="https://placehold.co/560x192"
         alt="Profile picture"
+        className='w-full'
       />
 
       {/* </div> */}
