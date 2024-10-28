@@ -45,6 +45,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "convex": "^1.17.0",
     "date-fns": "^3.6.0",
     "encoding": "^0.1.13",
     "framer-motion": "^11.1.9",

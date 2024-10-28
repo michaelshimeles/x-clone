@@ -1,7 +1,7 @@
 import Provider from '@/app/provider'
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
-import AuthWrapper from '@/components/wrapper/auth-wrapper'
+import { ClerkProvider } from '@clerk/nextjs'
 import { Analytics } from "@vercel/analytics/react"
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata } from 'next'
@@ -40,7 +40,7 @@ export default function RootLayout({
 
 
   return (
-    <AuthWrapper>
+    <ClerkProvider dynamic>
       <html lang="en" suppressHydrationWarning>
         <body className={GeistSans.className}>
           <Provider>
@@ -59,6 +59,5 @@ export default function RootLayout({
           <Analytics />
         </body>
       </html>
-    </AuthWrapper>
-  )
+    </ClerkProvider>)
 }

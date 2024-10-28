@@ -1,5 +1,5 @@
 "use client"
-import { Settings, Search, PenSquare } from 'lucide-react'
+import { PenSquare, Search, Settings } from 'lucide-react'
 import { useState } from 'react'
 
 interface MessageProps {

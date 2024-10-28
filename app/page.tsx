@@ -1,10 +1,10 @@
-import PostInput from '@/components/post-input'
-import TabNavigation from '@/components/tab-navigation'
-import Tweet from '@/components/tweet'
+import PostInput from '@/components/post-input';
+import TabNavigation from '@/components/tab-navigation';
+import Tweet from '@/components/tweet';
 
-export default function HomePage() {
+export default async function HomePage() {
   return (
-    <div className="border-l border-r border-gray-200 min-h-screen max-w-[600px] w-full">
+    <div className="border-l border-r border-gray-200 min-h-screen max-w-6xl w-full">
       {/* Sticky Header */}
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm mt-3">
         <TabNavigation tabs={["For you", "Following"]} />

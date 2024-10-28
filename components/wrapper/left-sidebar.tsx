@@ -1,6 +1,15 @@
-import React from 'react';
-import { Home, Hash, Bell, Mail, Bookmark, User, MoreHorizontal, PenSquare } from 'lucide-react';
+import { Bell, Bookmark, Hash, Home, Mail, MoreHorizontal, PenSquare, User } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import PostButton from '../post-button';
 
 const XLogo = () => (
   <svg viewBox="0 0 24 24" className="w-8 h-8" fill="currentColor">
@@ -13,10 +22,12 @@ const NavItem = ({ icon, label, path }: {
   label: string,
   path: string
 }) => {
+  const pathname = usePathname();
+
   return (
     <Link
       href={path}
-      className="flex items-center gap-4 p-3 hover:bg-gray-100 rounded-full transition-colors text-xl"
+      className={`flex items-center gap-4 p-3 rounded-full transition-colors text-xl hover:bg-gray-100 ${pathname === path && "p-2 rounded bg-gray-100"}`}
     >
       {icon}
       <span className="hidden md:inline">{label}</span>
@@ -28,22 +39,20 @@ const Sidebar = () => {
   return (
     <div className="w-20 md:w-64 flex-shrink-0 p-4 overflow-y-auto md:ml-[135px]">
       <div className="flex flex-col h-full">
-        <div className="p-4">
+        <Link href="/" className="p-4">
           <XLogo />
-        </div>
-        <nav className="mt-2">
+        </Link>
+        <nav className="space-y-1 mt-2">
           <NavItem icon={<Home size={28} />} label="Home" path="/" />
           <NavItem icon={<Hash size={28} />} label="Explore" path="/explore" />
           <NavItem icon={<Bell size={28} />} label="Notifications" path="/notifications" />
           <NavItem icon={<Mail size={28} />} label="Messages" path="/messages" />
           <NavItem icon={<Bookmark size={28} />} label="Bookmarks" path="/bookmarks" />
           <NavItem icon={<User size={28} />} label="Profile" path="/profile" />
-          <NavItem icon={<MoreHorizontal size={28} />} label="More" path="/" />
+          {/* <NavItem icon={<MoreHorizontal size={28} />} label="More" path="/" /> */}
         </nav>
-        <button className="bg-blue-500 text-white rounded-full py-3 px-4 font-bold mt-4 hover:bg-blue-600 transition-colors">
-          <span className="hidden md:inline">Post</span>
-          <PenSquare size={28} className="md:hidden" />
-        </button>
+        <PostButton />
+
       </div>
     </div>
   );

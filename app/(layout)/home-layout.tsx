@@ -12,10 +12,12 @@ export default function HomeLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const isSignInPage = pathname === '/account'
+  const isSignInPage = pathname === '/sign-in'
+  const isSignUpPage = pathname === '/sign-up'
+
   const isMessagesPage = pathname === '/messages'
 
-  if (isSignInPage) {
+  if (isSignInPage || isSignUpPage) {
     return <>{children}</>
   }
 

@@ -1,5 +1,4 @@
-import Image from 'next/image'
-import { MessageCircle, Repeat2, Heart, BarChart2, Bookmark, Upload } from 'lucide-react'
+import { BarChart2, Bookmark, Heart, MessageCircle, Repeat2, Upload } from 'lucide-react'
 
 export default function Tweet() {
   return (
