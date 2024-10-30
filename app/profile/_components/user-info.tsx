@@ -1,10 +1,14 @@
 "use client"
 import React, { useState } from 'react';
-import { BadgeCheck, MapPin, Calendar, Link as LinkIcon, Briefcase } from 'lucide-react';
+import { BadgeCheck, MapPin, Calendar, Briefcase } from 'lucide-react';
 import EditProfile from './edit-profile';
 import ImageModal from './image-modal';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const UserInfo = ({ preloadedUserInfo }: any) => {
+  const pathname = usePathname()
+  console.log('pathname', pathname)
   const userInfo = preloadedUserInfo?._valueJSON;
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
@@ -51,9 +55,9 @@ const UserInfo = ({ preloadedUserInfo }: any) => {
       </div>
 
       {/* Profile Section */}
-      <div className="px-4">
+      <div>
         {/* Profile Picture and Edit Button */}
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start px-4">
           <div className="relative -mt-16">
             <div
               onClick={(e) => handleImageClick(
@@ -76,7 +80,7 @@ const UserInfo = ({ preloadedUserInfo }: any) => {
         </div>
 
         {/* Name and Username */}
-        <div className="mt-4">
+        <div className="mt-4 px-4">
           <div className="flex items-center gap-1">
             <h2 className="text-xl font-bold">{userInfo?.name}</h2>
             <BadgeCheck className="w-5 h-5 text-blue-500" />
@@ -85,12 +89,12 @@ const UserInfo = ({ preloadedUserInfo }: any) => {
         </div>
 
         {/* Bio */}
-        <p className="mt-3">
+        <p className="mt-3 px-4">
           {userInfo?.description}
         </p>
 
         {/* Info Items */}
-        <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-gray-600">
+        <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-gray-600 px-4">
           <div className="flex items-center gap-1">
             <Briefcase className="w-4 h-4" />
             <span>Engineer</span>
@@ -100,7 +104,7 @@ const UserInfo = ({ preloadedUserInfo }: any) => {
             <span>Toronto 🇨🇦</span>
           </div>
           <div className="flex items-center gap-1">
-            <LinkIcon className="w-4 h-4" />
+            {/* <LinkIcon className="w-4 h-4" /> */}
             <a href={userInfo?.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
               {userInfo?.link}
             </a>
@@ -115,7 +119,7 @@ const UserInfo = ({ preloadedUserInfo }: any) => {
         </div>
 
         {/* Following/Followers */}
-        <div className="flex gap-4 mt-3">
+        <div className="flex gap-4 mt-3 px-4">
           <button className="hover:underline">
             <span className="font-bold">467</span>
             <span className="text-gray-600"> Following</span>
@@ -128,15 +132,27 @@ const UserInfo = ({ preloadedUserInfo }: any) => {
 
         {/* Navigation Tabs */}
         <div className="flex mt-4 border-b">
-          {['Posts', 'Replies', 'Highlights', 'Articles', 'Media', 'Likes'].map((tab, index) => (
-            <button
-              key={tab}
-              className={`px-4 py-4 font-medium hover:bg-gray-50 relative ${
-                index === 0 ? 'font-bold after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-500 after:rounded-full' : 'text-gray-600'
-              }`}
+          {[{
+            tab: 'Posts',
+            path: "/profile"
+          }, {
+            tab: 'Replies',
+            path: "/profile/replies"
+          }, {
+            tab: 'Media',
+            path: "/profile/media"
+          }, {
+            tab: 'Likes',
+            path: "/profile/likes"
+          }].map((tab, index) => (
+            <Link
+              href={tab?.path}
+              key={index}
+              className={`px-4 text-center py-4 font-medium hover:bg-gray-50 relative w-full ${pathname === tab?.path ? 'font-bold after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-500 after:rounded-full' : 'text-gray-600'
+                }`}
             >
-              {tab}
-            </button>
+              {tab?.tab}
+            </Link>
           ))}
         </div>
       </div>

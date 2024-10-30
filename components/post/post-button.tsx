@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from "@/components/ui/dialog"
 import {
   DropdownMenu,
@@ -17,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { api } from "@/convex/_generated/api"
 import { fetchMutation, fetchQuery } from "convex/nextjs"
-import { AlignLeft, Calendar, ChevronDown, Gift, Globe, Image, MapPin, Smile, X } from "lucide-react"
+import { AlignLeft, ChevronDown, Globe, Image, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -26,20 +25,17 @@ export default function PostButton({ userId }: { userId: string }) {
   const [isOpen, setIsOpen] = useState(false)
   const [audience, setAudience] = useState("Everyone")
   const [isUploading, setIsUploading] = useState(false)
-  const [selectedImages, setSelectedImages] = useState<File[]>([])
+  const [selectedImages, setSelectedImages] = useState<string[]>([])
   const imageInputRef = useRef<HTMLInputElement>(null)
-
   const [userInfo, setUserInfo] = useState<any>(null)
 
   useEffect(() => {
     const getUserInfo = async () => {
       const userInfo = await fetchQuery(api.user.readUser, { userId });
       setUserInfo(userInfo)
-
     }
     getUserInfo()
   }, [userId])
-
 
   const {
     register,
@@ -52,14 +48,12 @@ export default function PostButton({ userId }: { userId: string }) {
     try {
       let imageData;
       if (selectedImages.length > 0) {
-        // Use the already uploaded images instead of trying to upload again
         imageData = {
-          imageUrls: selectedImages.map(file => URL.createObjectURL(file)),
-          imageIds: [] // You'll need to store these when images are first uploaded
+          imageUrls: selectedImages,
+          imageIds: []
         };
       }
 
-      // Create the tweet
       await fetchMutation(api.tweets.createTweet, {
         content: data.post,
         userId: userInfo.userId,
@@ -70,15 +64,14 @@ export default function PostButton({ userId }: { userId: string }) {
 
       toast.success('Tweet posted!')
       setIsOpen(false)
-      reset() // Reset form
-      setSelectedImages([]) // Clear images
+      reset()
+      setSelectedImages([])
     } catch (error) {
       console.error('Failed to post tweet:', error)
       toast.error('Failed to post tweet')
     }
   }
 
-  // Modify handleImageSelect to store the imageIds
   const handleImageSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
     if (!files) return
@@ -90,10 +83,8 @@ export default function PostButton({ userId }: { userId: string }) {
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
-        // Get upload URL from Convex
         const postUrl = await fetchMutation(api.messages.generateUploadUrl);
 
-        // Upload file
         const result = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": file.type },
@@ -105,13 +96,13 @@ export default function PostButton({ userId }: { userId: string }) {
         const { storageId } = await result.json();
         const imageUrl = await fetchMutation(api.messages.getUploadUrl, { storageId });
 
-        imageUrls.push(imageUrl!)
-        imageIds.push(storageId)
+        if (imageUrl) {
+          imageUrls.push(imageUrl)
+          imageIds.push(storageId)
+        }
       }
 
-      setSelectedImages(Array.from(files))
-      // Store the uploaded image data
-      return { imageUrls, imageIds }
+      setSelectedImages(prev => [...prev, ...imageUrls])
     } catch (error) {
       console.error('Image upload failed:', error)
       toast.error('Failed to upload images')
@@ -119,6 +110,10 @@ export default function PostButton({ userId }: { userId: string }) {
       setIsUploading(false)
     }
   }
+
+  const removeImage = (index: number) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -130,58 +125,69 @@ export default function PostButton({ userId }: { userId: string }) {
           </span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="[&>button]:hidden sm:max-w-[600px] p-0 overflow-hidden">
-        <DialogHeader className="px-4 py-2 border-b border-gray-200 flex flex-row justify-between items-center w-full">
-          <DialogTitle className="text-lg font-bold text-[#1DA1F2]">New Tweet</DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-gray-500"
-            onClick={() => setIsOpen(false)}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[600px] p-0">
+        <DialogTitle></DialogTitle>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="p-4">
+          <div className="p-4 mt-3">
             <div className="flex items-start space-x-4">
-              <Avatar className="w-12 h-12">
-                <AvatarImage src={userInfo?.profileImage || "/placeholder.svg?height=48&width=48"} />
-                <AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 space-y-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="rounded-full px-4 py-0 h-8 text-[#1DA1F2] border-[#1DA1F2]">
-                      {audience}
-                      <ChevronDown className="h-4 w-4 ml-2" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-[200px]">
-                    <DropdownMenuItem onClick={() => setAudience("Everyone")}>
-                      Everyone
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setAudience("Followers")}>
-                      Followers
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+              <div className="flex flex-col w-full gap-2">
+                <div className="flex items-start gap-1">
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={userInfo?.profileImage || "/placeholder.svg?height=48&width=48"} />
+                    <AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
+                  </Avatar>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="rounded-full px-4 py-0 h-8 text-[#1DA1F2] border-[#1DA1F2]">
+                        {audience}
+                        <ChevronDown className="h-4 w-4 ml-2" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-[200px]">
+                      <DropdownMenuItem onClick={() => setAudience("Everyone")}>
+                        Everyone
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setAudience("Followers")}>
+                        Followers
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
                 <textarea
                   placeholder="What is happening?!"
-                  className="w-full min-h-[150px] text-xl resize-none border-none focus:outline-none"
+                  className="w-full text-xl resize-none border-none focus:outline-none min-h-[50px] mt-4"
+                  style={{ height: 'auto' }}
+                  rows={1}
                   {...register("post", { required: true })}
+                  onChange={(e) => {
+                    e.target.style.height = 'auto';
+                    e.target.style.height = e.target.scrollHeight + 'px';
+                  }}
                 />
-                {/* Image previews */}
                 {selectedImages.length > 0 && (
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {selectedImages.map((file, index) => (
-                      <img
-                        key={index}
-                        src={URL.createObjectURL(file)}
-                        alt={`Upload ${index + 1}`}
-                        className="rounded-lg object-cover h-32 w-full"
-                      />
-                    ))}
+                  <div className="overflow-y-auto max-h-[300px] rounded-xl">
+                    <div className="flex flex-col gap-2">
+                      {selectedImages.map((file, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={file}
+                            alt={`Upload ${index + 1}`}
+                            className="rounded-lg w-full h-auto object-contain"
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              removeImage(index);
+                            }}
+                            className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 hover:bg-black/70
+                              text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -191,8 +197,8 @@ export default function PostButton({ userId }: { userId: string }) {
               <span className="text-sm">Everyone can reply</span>
             </div>
           </div>
-          <div className="flex justify-between items-center px-4 py-3 border-t border-gray-200">
-            <div className="flex space-x-4">
+          <div className="flex justify-between items-center px-4 py-3 border-t border-gray-200 bg-white">
+            <div className="flex">
               <input
                 type="file"
                 ref={imageInputRef}
@@ -209,21 +215,6 @@ export default function PostButton({ userId }: { userId: string }) {
                 type="button"
               >
                 <Image className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-[#1DA1F2]">
-                <Gift className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-[#1DA1F2]">
-                <AlignLeft className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-[#1DA1F2]">
-                <Smile className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-[#1DA1F2]">
-                <Calendar className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-[#1DA1F2]">
-                <MapPin className="h-5 w-5" />
               </Button>
             </div>
             <Button

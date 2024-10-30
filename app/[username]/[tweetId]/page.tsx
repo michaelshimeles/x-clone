@@ -1,11 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { api } from "@/convex/_generated/api"
-import { preloadQuery } from "convex/nextjs"
-import { BarChart2, Bookmark, Heart, MessageCircle, MoreHorizontal, Repeat2, Share } from "lucide-react"
-import GoBack from "./(components)/go-back"
-import DeleteButton from "./(components)/delete-button"
 import { auth } from "@clerk/nextjs/server"
+import { preloadQuery } from "convex/nextjs"
+import { BarChart2, Bookmark, Heart, MessageCircle, Repeat2, Share } from "lucide-react"
+import DeleteButton from "./(components)/delete-button"
+import Header from "./(components)/header"
+import { formatDistanceToNow } from 'date-fns';
 
 export default async function ThreadView({ params }: any) {
   const id = (await params)
@@ -18,21 +19,7 @@ export default async function ThreadView({ params }: any) {
 
   return (
     <div className="max-w-2xl mx-auto w-full bg-background border-x">
-      <header className="flex items-center justify-between p-4 border-b">
-        <div className="flex items-center gap-8">
-          <GoBack />
-          <h1 className="text-xl font-bold">Thread</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" className="rounded-full">
-            Reply
-          </Button>
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <MoreHorizontal className="h-5 w-5" />
-            <span className="sr-only">More options</span>
-          </Button>
-        </div>
-      </header>
+      <Header />
       <article className="p-4">
         <div className="flex gap-3">
           <div className="flex-1">
@@ -58,22 +45,48 @@ export default async function ThreadView({ params }: any) {
                   </div>
                 </div>
               </div>
-              {/** Delete Button */}
-              <DeleteButton userId={userId!} tweetId={id?.tweetId}/>
+              <DeleteButton userId={userId!} tweetId={id?.tweetId} />
             </div>
             <div className="mt-3 space-y-3 text-base">
               <p>{result?._valueJSON?.content}</p>
+              {result?._valueJSON?.images && result?._valueJSON?.images.length > 0 && (
+                <div className={`grid gap-2 mt-3 ${result._valueJSON.images.length === 1 ? 'grid-cols-1' :
+                    result._valueJSON.images.length === 2 ? 'grid-cols-2' :
+                      result._valueJSON.images.length === 3 ? 'grid-cols-2' :
+                        'grid-cols-2'
+                  }`}>
+                  {result._valueJSON.images.map((image: string, index: number) => (
+                    <div
+                      key={index}
+                      className={`relative ${result._valueJSON.images.length === 3 && index === 0 ? 'col-span-2' : ''
+                        }`}
+                    >
+                      <img
+                        src={image}
+                        alt={`Tweet image ${index + 1}`}
+                        className="rounded w-full h-full object-cover"
+                      // style={{ maxHeight: result._valueJSON.images.length === 1 ? '500px' : '300px' }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="mt-3 text-sm text-muted-foreground">
-              <span>11:36 AM · Oct 26, 2024</span>
-              <span className="mx-1">·</span>
+              <span>{new Date(result?._valueJSON?.createdAt).toLocaleTimeString() + "  ·  " + new Date(result?._valueJSON?.createdAt).toLocaleDateString('en-US', {
+                day: "numeric",
+                month: 'long',
+                year: 'numeric'
+              })}</span>
+
+              <span className="mx-1"> · </span>
               <span className="font-semibold text-foreground">25.6K</span>
               <span> Views</span>
             </div>
-            <Button variant="ghost" className="mt-3 text-sm text-muted-foreground hover:text-foreground w-full justify-start gap-2 font-medium">
+            <div className="flex p-2 rounded hover:bg-gray-200 text-black items-center mt-3 text-sm text-muted-foreground hover:text-foreground w-full justify-start gap-2 font-medium">
               <BarChart2 className="h-4 w-4" />
-              View post engagements
-            </Button>
+              <p>View post engagements</p>
+            </div>
             <div className="mt-3 flex items-center justify-between border-y py-3 w-full">
               <Button variant="ghost" size="icon" className="gap-1">
                 <MessageCircle className="h-5 w-5" />
