@@ -23,7 +23,6 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
     e.stopPropagation(); // Stop event bubbling
 
     try {
-      setIsDeleting(true);
       await fetchMutation(api.tweets.deleteTweet, {
         tweetId: tweet._id,
         userId: userId
@@ -51,7 +50,7 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
         <div className="">
           <div className="flex items-start space-x-3">
             <img
-              src={tweet.user?.profileImage || "https://placehold.co/48x48"}
+              src={tweet.user?.profileImage}
               alt="Profile picture"
               width={48}
               height={48}
@@ -113,7 +112,7 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
             </div>
             {isOwner && (
               <DropdownMenu>
-                <DropdownMenuTrigger onClick={handleDropdownClick}>
+                <DropdownMenuTrigger onClick={handleDropdownClick} asChild>
                   <button className="text-gray-500 hover:text-gray-300">
                     <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
                       <g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g>

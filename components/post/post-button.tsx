@@ -1,5 +1,3 @@
-"use client"
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,28 +19,34 @@ import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export default function PostButton({ userId }: { userId: string }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [audience, setAudience] = useState("Everyone")
-  const [isUploading, setIsUploading] = useState(false)
-  const [selectedImages, setSelectedImages] = useState<string[]>([])
-  const imageInputRef = useRef<HTMLInputElement>(null)
-  const [userInfo, setUserInfo] = useState<any>(null)
+type PostButtonProps = {
+  userId: string;
+};
+
+export default function PostButton({ userId }: PostButtonProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [audience, setAudience] = useState("Everyone");
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
     const getUserInfo = async () => {
-      const userInfo = await fetchQuery(api.user.readUser, { userId });
-      setUserInfo(userInfo)
-    }
-    getUserInfo()
-  }, [userId])
+      if (userId) {
+        const userInfo = await fetchQuery(api.user.readUser, { userId });
+        setUserInfo(userInfo);
+      }
+    };
+    getUserInfo();
+  }, [userId]);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm()
+  } = useForm();
 
   const onSubmit = async (data: any) => {
     try {
@@ -50,39 +54,39 @@ export default function PostButton({ userId }: { userId: string }) {
       if (selectedImages.length > 0) {
         imageData = {
           imageUrls: selectedImages,
-          imageIds: []
+          imageIds: [],
         };
       }
 
       await fetchMutation(api.tweets.createTweet, {
         content: data.post,
-        userId: userInfo.userId,
+        userId: userInfo?.userId,
         visibility: audience.toLowerCase(),
         images: imageData,
-        createdAt: Date.now()
+        createdAt: Date.now(),
       });
 
-      toast.success('Tweet posted!')
-      setIsOpen(false)
-      reset()
-      setSelectedImages([])
+      toast.success("Tweet posted!");
+      setIsOpen(false);
+      reset();
+      setSelectedImages([]);
     } catch (error) {
-      console.error('Failed to post tweet:', error)
-      toast.error('Failed to post tweet')
+      console.error("Failed to post tweet:", error);
+      toast.error("Failed to post tweet");
     }
-  }
+  };
 
   const handleImageSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files
-    if (!files) return
+    const files = event.target.files;
+    if (!files) return;
 
-    setIsUploading(true)
+    setIsUploading(true);
     try {
-      const imageUrls: string[] = []
-      const imageIds: string[] = []
+      const imageUrls: string[] = [];
+      const imageIds: string[] = [];
 
       for (let i = 0; i < files.length; i++) {
-        const file = files[i]
+        const file = files[i];
         const postUrl = await fetchMutation(api.messages.generateUploadUrl);
 
         const result = await fetch(postUrl, {
@@ -97,22 +101,22 @@ export default function PostButton({ userId }: { userId: string }) {
         const imageUrl = await fetchMutation(api.messages.getUploadUrl, { storageId });
 
         if (imageUrl) {
-          imageUrls.push(imageUrl)
-          imageIds.push(storageId)
+          imageUrls.push(imageUrl);
+          imageIds.push(storageId);
         }
       }
 
-      setSelectedImages(prev => [...prev, ...imageUrls])
+      setSelectedImages((prev) => [...prev, ...imageUrls]);
     } catch (error) {
-      console.error('Image upload failed:', error)
-      toast.error('Failed to upload images')
+      console.error('Image upload failed:', error);
+      toast.error('Failed to upload images');
     } finally {
-      setIsUploading(false)
+      setIsUploading(false);
     }
-  }
+  };
 
   const removeImage = (index: number) => {
-    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -228,5 +232,5 @@ export default function PostButton({ userId }: { userId: string }) {
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

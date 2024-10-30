@@ -33,37 +33,7 @@ export const createTweet = mutation({
     return tweet;
   },
 });
-// Query to get tweets for timeline
-// export const getTimeline = query({
-//   args: {
-//     limit: v.number(),
-//     cursor: v.optional(v.id("tweets")),
-//   },
-//   handler: async (ctx, args) => {
-//     let tweets = await ctx.db
-//       .query("tweets")
-//       .filter((q) => q.eq(q.field("isHidden"), false))
-//       .order("desc")
-//       .take(args.limit);
 
-//     // You might want to include user info
-//     const userIds = [...new Set(tweets.map((tweet) => tweet.userId))];
-//     const users = await Promise.all(
-//       userIds.map((userId) =>
-//         ctx.db
-//           .query("users")
-//           .filter((q) => q.eq(q.field("userId"), userId))
-//           .first()
-//       )
-//     );
-
-//     // Combine tweet data with user data
-//     return tweets.map((tweet) => ({
-//       ...tweet,
-//       user: users.find((user) => user?.userId === tweet.userId),
-//     }));
-//   },
-// });
 
 // Mutation for liking a tweet
 export const likeTweet = mutation({
@@ -168,18 +138,31 @@ export const deleteTweet = mutation({
   },
 });
 
+// convex/tweets.ts
 export const getTweet = query({
   args: {
     username: v.string(),
     tweetId: v.string(),
   },
   handler: async (ctx, args) => {
-    const tweets = await ctx.db
+    const tweet = await ctx.db
       .query("tweets")
       .filter((q) => q.eq(q.field("_id"), args.tweetId))
       .order("desc")
       .first();
 
-    return tweets;
+    if (!tweet) {
+      return null;
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("username"), args.username))
+      .first();
+
+    return {
+      ...tweet,
+      user,
+    };
   },
 });

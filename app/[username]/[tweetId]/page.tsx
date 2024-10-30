@@ -6,7 +6,7 @@ import { preloadQuery } from "convex/nextjs"
 import { BarChart2, Bookmark, Heart, MessageCircle, Repeat2, Share } from "lucide-react"
 import DeleteButton from "./(components)/delete-button"
 import Header from "./(components)/header"
-import { formatDistanceToNow } from 'date-fns';
+import Link from "next/link"
 
 export default async function ThreadView({ params }: any) {
   const id = (await params)
@@ -51,9 +51,9 @@ export default async function ThreadView({ params }: any) {
               <p>{result?._valueJSON?.content}</p>
               {result?._valueJSON?.images && result?._valueJSON?.images.length > 0 && (
                 <div className={`grid gap-2 mt-3 ${result._valueJSON.images.length === 1 ? 'grid-cols-1' :
-                    result._valueJSON.images.length === 2 ? 'grid-cols-2' :
-                      result._valueJSON.images.length === 3 ? 'grid-cols-2' :
-                        'grid-cols-2'
+                  result._valueJSON.images.length === 2 ? 'grid-cols-2' :
+                    result._valueJSON.images.length === 3 ? 'grid-cols-2' :
+                      'grid-cols-2'
                   }`}>
                   {result._valueJSON.images.map((image: string, index: number) => (
                     <div
@@ -61,12 +61,14 @@ export default async function ThreadView({ params }: any) {
                       className={`relative ${result._valueJSON.images.length === 3 && index === 0 ? 'col-span-2' : ''
                         }`}
                     >
-                      <img
-                        src={image}
-                        alt={`Tweet image ${index + 1}`}
-                        className="rounded w-full h-full object-cover"
-                      // style={{ maxHeight: result._valueJSON.images.length === 1 ? '500px' : '300px' }}
-                      />
+                      <Link href={`/${id?.username}/media/${id?.tweetId}`}>
+                        <img
+                          src={image}
+                          alt={`Tweet image ${index + 1}`}
+                          className="rounded w-full h-full object-cover"
+                        // style={{ maxHeight: result._valueJSON.images.length === 1 ? '500px' : '300px' }}
+                        />
+                      </Link>
                     </div>
                   ))}
                 </div>
@@ -108,6 +110,7 @@ export default async function ThreadView({ params }: any) {
                 <Share className="h-5 w-5" />
               </Button>
             </div>
+
           </div>
         </div>
       </article>

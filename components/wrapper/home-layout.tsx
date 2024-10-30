@@ -20,11 +20,11 @@ export default function HomeLayout({
 
   const isMessagesPage = pathname === '/messages'
   const isSettingsPage = pathname === '/settings'
+  const mediaPage = pathname.match(/^\/[\w]+\/media\/[\w\d]+$/);
 
-  if (isSignInPage || isSignUpPage || testPage) {
+  if (isSignInPage || isSignUpPage || testPage || mediaPage) {
     return <>{children}</>
   }
-
   if (isMessagesPage || isSettingsPage) {
     return (
       <div className="flex justify-center bg-white text-black min-h-screen">

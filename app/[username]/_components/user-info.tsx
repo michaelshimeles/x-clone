@@ -134,16 +134,16 @@ const UserInfo = ({ preloadedUserInfo }: any) => {
         <div className="flex mt-4 border-b">
           {[{
             tab: 'Posts',
-            path: "/profile"
+            path:  `/${userInfo?.username}`
           }, {
             tab: 'Replies',
-            path: "/profile/replies"
+            path: `/${userInfo?.username}/replies`
           }, {
             tab: 'Media',
-            path: "/profile/media"
+            path: `/${userInfo?.username}/media`
           }, {
             tab: 'Likes',
-            path: "/profile/likes"
+            path: `/${userInfo?.username}/likes`
           }].map((tab, index) => (
             <Link
               href={tab?.path}

@@ -1,17 +1,16 @@
 // app/components/tweet-list.tsx
 'use client'
 
-import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import Tweet from "@/app/profile/_components/tweet";
-import Link from "next/link";
+import { useQuery } from "convex/react";
+import Tweet from "./tweet";
 
 export default function TweetList({ preloadedTweets, userId, userInfo }: any) {
   const tweets = useQuery(api.tweets.getTweets, preloadedTweets?._valueJSON?.userId) || preloadedTweets?._valueJSON;
 
   if (!tweets?.length) {
     return (
-      <div className="p-4 text-center text-gray-500">
+      <div className="p-4 text-center text-gray-500 mt-[2rem]">
         No tweets yet
       </div>
     );

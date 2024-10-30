@@ -1,7 +1,9 @@
+"use client"
+import { api } from '@/convex/_generated/api';
+import { useQuery } from 'convex/react';
 import { Bell, Bookmark, Hash, Home, Mail, MoreHorizontal, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
 import PostButton from '../post/post-button';
 
 const XLogo = () => (
@@ -30,6 +32,8 @@ const NavItem = ({ icon, label, path }: {
 
 const Sidebar = ({ userId }: { userId: string }) => {
 
+  const userInfo = useQuery(api.user.readUser, { userId })
+
   return (
     <div className="w-20 md:w-64 flex-shrink-0 p-4 overflow-y-auto md:ml-[135px]">
       <div className="flex flex-col h-full">
@@ -42,7 +46,7 @@ const Sidebar = ({ userId }: { userId: string }) => {
           <NavItem icon={<Bell size={28} />} label="Notifications" path="/notifications" />
           <NavItem icon={<Mail size={28} />} label="Messages" path="/messages" />
           <NavItem icon={<Bookmark size={28} />} label="Bookmarks" path="/bookmarks" />
-          <NavItem icon={<User size={28} />} label="Profile" path="/profile" />
+          <NavItem icon={<User size={28} />} label="Profile" path={`/${userInfo?.username}`} />
           <NavItem icon={<MoreHorizontal size={28} />} label="More" path='/settings' />
         </nav>
         <PostButton userId={userId} />

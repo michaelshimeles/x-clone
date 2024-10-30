@@ -2,11 +2,9 @@ import { api } from '@/convex/_generated/api';
 import { auth } from '@clerk/nextjs/server';
 import { preloadQuery } from 'convex/nextjs';
 import ProfileHeader from '../_components/header';
-import MediaGrid from '../_components/media-grid';
 import UserInfo from '../_components/user-info';
 
-// app/profile/page.tsx
-export default async function Profile() {
+export default async function Replies() {
   const { userId } = await auth()
 
   const preloadedUserInfo = await preloadQuery(api.user.readUser, {
@@ -31,8 +29,6 @@ export default async function Profile() {
         </div>
 
         {/* Tweets */}
-        <MediaGrid tweets={preloadedTweets._valueJSON} />
-        {/* <TweetList preloadedTweets={preloadedTweets} userInfo={preloadedUserInfo?._valueJSON} userId={userId} /> */}
       </main>
     </div>
   )
