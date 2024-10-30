@@ -5,9 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import Tweet from "./tweet";
 
-export default function TweetList({ preloadedTweets, userId, userInfo }: any) {
-  console.log('userId', userId)
-  console.log('preloadedTweets?._valueJSON', preloadedTweets?._valueJSON)
+export default function TweetList({  userId, userInfo }: any) {
   const tweets = useQuery(api.tweets.getTweets, { userId })
 
   console.log('tweets', tweets)
@@ -19,7 +17,6 @@ export default function TweetList({ preloadedTweets, userId, userInfo }: any) {
     );
   }
 
-  console.log('tweets', tweets)
   return (
     <>
       {tweets.map((tweet: any) => (

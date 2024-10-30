@@ -434,7 +434,6 @@ export const getBookmarks = query({
       )
     ).flat();
 
-
     return tweets;
   },
 });

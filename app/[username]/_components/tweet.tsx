@@ -197,8 +197,8 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
                     className="flex items-center space-x-1 group"
                     onClick={handleRetweet}
                   >
-                    <Repeat2 className={`w-5 h-5 ${isRetweeted ? 'fill-current text-green-500' : 'group-hover:text-green-500'}`} />
-                    <span className={`text-xs ${isRetweeted ? 'text-green-500' : 'group-hover:text-green-500'}`}>
+                    <Repeat2 className={`w-5 h-5 ${displayTweet?.retweetCount > 0 && isRetweeted ? 'fill-current text-green-500' : 'group-hover:text-green-500'}`} />
+                    <span className={`text-xs ${displayTweet?.retweetCount > 0 && isRetweeted ? 'text-green-500' : 'group-hover:text-green-500'}`}>
                       {displayTweet?.retweetCount || 0}
                     </span>
                   </button>

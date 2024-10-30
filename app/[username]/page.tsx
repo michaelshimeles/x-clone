@@ -8,15 +8,8 @@ import UserInfo from './_components/user-info';
 // app/profile/page.tsx
 export default async function Profile({ params }: { params: Promise<{ username: string }> }) {
   const { userId } = await auth()
-  const param = await params
-
-  console.log('param', param)
 
   const preloadedUserInfo = await preloadQuery(api.user.readUser, {
-    userId: userId!
-  });
-
-  const preloadedTweets = await preloadQuery(api.tweets.getTweets, {
     userId: userId!
   });
 
@@ -32,7 +25,7 @@ export default async function Profile({ params }: { params: Promise<{ username: 
         </div>
 
         {/* Tweets */}
-        <TweetList preloadedTweets={preloadedTweets} userInfo={preloadedUserInfo?._valueJSON} userId={userId} />
+        <TweetList userInfo={preloadedUserInfo?._valueJSON} userId={userId} />
       </main>
     </div>
   )
