@@ -46,7 +46,7 @@ const Sidebar = ({ userId }: { userId: string }) => {
           <NavItem icon={<Bell size={28} />} label="Notifications" path="/notifications" />
           <NavItem icon={<Mail size={28} />} label="Messages" path="/messages" />
           <NavItem icon={<Bookmark size={28} />} label="Bookmarks" path="/bookmarks" />
-          <NavItem icon={<User size={28} />} label="Profile" path={`/${userInfo?.username}`} />
+          {<NavItem icon={<User size={28} />} label="Profile" path={`/${userInfo?.username}`} />}
           <NavItem icon={<MoreHorizontal size={28} />} label="More" path='/settings' />
         </nav>
         <PostButton userId={userId} />

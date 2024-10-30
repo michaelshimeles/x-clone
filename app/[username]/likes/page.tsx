@@ -11,11 +11,11 @@ export default async function Likes() {
     userId: userId!
   });
 
-  const preloadedTweets = await preloadQuery(api.tweets.getTweets, {
+  const preloadedLikes = await preloadQuery(api.tweets.getLikes, {
     userId: userId!
   });
 
-  console.log('preloadedTweets', preloadedTweets._valueJSON)
+  console.log('preloadedLikes', preloadedLikes._valueJSON)
 
   return (
     <div className="border-l border-r border-gray-200 min-h-screen w-full">
@@ -28,7 +28,7 @@ export default async function Likes() {
           <UserInfo preloadedUserInfo={preloadedUserInfo} />
         </div>
 
-        {/* Tweets */}
+        {/* Render Liked tweets here */}
       </main>
     </div>
   )

@@ -8,11 +8,12 @@ import { useUser } from '@clerk/nextjs'
 
 
 export default function HomeLayout({
+  userId,
   children,
 }: {
+  userId: string
   children: React.ReactNode
 }) {
-  const { user } = useUser()
   const pathname = usePathname()
   const isSignInPage = pathname === '/sign-in'
   const isSignUpPage = pathname === '/sign-up'
@@ -30,7 +31,7 @@ export default function HomeLayout({
       <div className="flex justify-center bg-white text-black min-h-screen">
         <div className="flex w-full max-w-[1600px]">
           {/* Left Sidebar */}
-          <LeftSidebar userId={user?.id!} />
+          <LeftSidebar userId={userId!} />
           {children}
         </div>
       </div>
@@ -40,7 +41,7 @@ export default function HomeLayout({
     <div className="flex justify-center bg-white text-black min-h-screen">
       <div className="flex w-full max-w-[1600px]">
         {/* Left Sidebar */}
-        <LeftSidebar userId={user?.id!} />
+        <LeftSidebar userId={userId!} />
         {children}
         <div className="hidden md:block max-w-[400px] w-full p-4 overflow-y-auto mr-[135px]">
           <Input className='rounded-full p-6 mb-3 bg-gray-100' placeholder='Search' />

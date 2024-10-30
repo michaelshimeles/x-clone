@@ -8,6 +8,7 @@ import type { Metadata } from 'next'
 import React from 'react'
 import HomeLayout from '../components/wrapper/home-layout'
 import './globals.css'
+import { auth } from '@clerk/nextjs/server'
 
 export const metadata: Metadata = {
   // metadataBase: new URL(""),
@@ -32,12 +33,13 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
 
+  const { userId } = await auth()
 
   return (
     <ClerkProvider dynamic>
@@ -50,7 +52,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <HomeLayout>
+              <HomeLayout userId={userId!}>
                 {children}
               </HomeLayout>
               <Toaster />

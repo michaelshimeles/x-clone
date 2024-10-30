@@ -6,8 +6,11 @@ import { useQuery } from "convex/react";
 import Tweet from "./tweet";
 
 export default function TweetList({ preloadedTweets, userId, userInfo }: any) {
-  const tweets = useQuery(api.tweets.getTweets, preloadedTweets?._valueJSON?.userId) || preloadedTweets?._valueJSON;
+  console.log('userId', userId)
+  console.log('preloadedTweets?._valueJSON', preloadedTweets?._valueJSON)
+  const tweets = useQuery(api.tweets.getTweets, { userId })
 
+  console.log('tweets', tweets)
   if (!tweets?.length) {
     return (
       <div className="p-4 text-center text-gray-500 mt-[2rem]">

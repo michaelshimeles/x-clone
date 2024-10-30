@@ -34,7 +34,6 @@ export const createTweet = mutation({
   },
 });
 
-
 // Mutation for liking a tweet
 export const likeTweet = mutation({
   args: {
@@ -75,20 +74,18 @@ export const likeTweet = mutation({
 // convex/tweets.ts
 export const getTweets = query({
   args: {
-    userId: v.optional(v.string()),
+    userId: v.string(),
   },
   handler: async (ctx, args) => {
     const tweets = await ctx.db
       .query("tweets")
-      .filter((q) =>
-        args.userId ? q.eq(q.field("userId"), args.userId) : true
-      )
+      .filter((q) => q.eq(q.field("userId"), args.userId))
       .order("desc")
       .collect();
 
     // Get unique userIds using reduce
     const userIds = tweets
-      .map(tweet => tweet.userId)
+      .map((tweet) => tweet.userId)
       .reduce((unique: string[], userId) => {
         return unique.includes(userId) ? unique : [...unique, userId];
       }, []);
@@ -164,5 +161,280 @@ export const getTweet = query({
       ...tweet,
       user,
     };
+  },
+});
+
+export const toggleBookmark = mutation({
+  args: {
+    userId: v.string(),
+    tweetId: v.id("tweets"),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("bookmarks")
+      .withIndex("by_user_tweet", (q) =>
+        q.eq("userId", args.userId).eq("tweetId", args.tweetId)
+      )
+      .first();
+
+    if (existing) {
+      await ctx.db.delete(existing._id);
+      return false; // Not bookmarked
+    }
+
+    await ctx.db.insert("bookmarks", {
+      userId: args.userId,
+      tweetId: args.tweetId,
+      createdAt: Date.now(),
+    });
+    return true; // Bookmarked
+  },
+});
+
+export const isBookmarked = query({
+  args: {
+    userId: v.string(),
+    tweetId: v.id("tweets"),
+  },
+  handler: async (ctx, args) => {
+    const bookmark = await ctx.db
+      .query("bookmarks")
+      .withIndex("by_user_tweet", (q) =>
+        q.eq("userId", args.userId).eq("tweetId", args.tweetId)
+      )
+      .first();
+    return Boolean(bookmark);
+  },
+});
+
+// Mutation
+export const toggleLike = mutation({
+  args: {
+    userId: v.string(),
+    tweetId: v.id("tweets"),
+  },
+  handler: async (ctx, args) => {
+    // Find all retweets of this tweet
+    const relatedTweets = await ctx.db
+      .query("tweets")
+      .filter((q) =>
+        q.or(
+          q.eq(q.field("_id"), args.tweetId),
+          q.eq(q.field("quotedTweetId"), args.tweetId)
+        )
+      )
+      .collect();
+
+    const tweetIds = relatedTweets.map((t) => t._id);
+
+    const existing = await ctx.db
+      .query("likes")
+      .withIndex("by_user_tweet", (q) =>
+        q.eq("userId", args.userId).eq("tweetId", args.tweetId)
+      )
+      .first();
+
+    if (existing) {
+      await ctx.db.delete(existing._id);
+      // Update like count for all related tweets
+      for (const tweetId of tweetIds) {
+        const tweet = await ctx.db.get(tweetId);
+        await ctx.db.patch(tweetId, {
+          likeCount: (tweet?.likeCount || 1) - 1,
+        });
+      }
+      return false;
+    }
+
+    await ctx.db.insert("likes", {
+      userId: args.userId,
+      tweetId: args.tweetId,
+      createdAt: Date.now(),
+    });
+
+    // Update like count for all related tweets
+    for (const tweetId of tweetIds) {
+      const tweet = await ctx.db.get(tweetId);
+      await ctx.db.patch(tweetId, {
+        likeCount: (tweet?.likeCount || 0) + 1,
+      });
+    }
+
+    return true;
+  },
+});
+// Query
+export const isLiked = query({
+  args: {
+    userId: v.string(),
+    tweetId: v.id("tweets"),
+  },
+  handler: async (ctx, args) => {
+    const like = await ctx.db
+      .query("likes")
+      .withIndex("by_user_tweet", (q) =>
+        q.eq("userId", args.userId).eq("tweetId", args.tweetId)
+      )
+      .first();
+    return Boolean(like);
+  },
+});
+
+export const getLikes = query({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const likes = await ctx.db
+      .query("likes")
+      .withIndex("by_user_tweet", (q) => q.eq("userId", args.userId))
+      .collect();
+    return likes;
+  },
+});
+
+// Mutation
+export const toggleRetweet = mutation({
+  args: {
+    userId: v.string(),
+    tweetId: v.id("tweets"),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("retweets")
+      .withIndex("by_user_tweet", (q) =>
+        q.eq("userId", args.userId).eq("tweetId", args.tweetId)
+      )
+      .first();
+
+    if (existing) {
+      // Remove retweet
+      await ctx.db.delete(existing._id);
+      // Delete the retweet tweet
+      const retweet = await ctx.db
+        .query("tweets")
+        .filter((q) =>
+          q.and(
+            q.eq(q.field("userId"), args.userId),
+            q.eq(q.field("isRetweet"), true),
+            q.eq(q.field("quotedTweetId"), args.tweetId)
+          )
+        )
+        .first();
+      if (retweet) {
+        await ctx.db.delete(retweet._id);
+      }
+      // Update count
+      const tweet = await ctx.db.get(args.tweetId);
+      await ctx.db.patch(args.tweetId, {
+        retweetCount: (tweet?.retweetCount || 1) - 1,
+      });
+      return false;
+    }
+
+    // Create retweet record
+    await ctx.db.insert("retweets", {
+      userId: args.userId,
+      tweetId: args.tweetId,
+      createdAt: Date.now(),
+    });
+
+    // Get original tweet
+    const originalTweet = await ctx.db.get(args.tweetId);
+
+    // Create new tweet as retweet
+    await ctx.db.insert("tweets", {
+      userId: args.userId,
+      content: originalTweet?.content || "",
+      createdAt: Date.now(),
+      isRetweet: true,
+      images: originalTweet?.images,
+      imageIds: originalTweet?.imageIds,
+      quotedTweetId: args.tweetId,
+      visibility: originalTweet?.visibility,
+    });
+
+    // Update count
+    await ctx.db.patch(args.tweetId, {
+      retweetCount: (originalTweet?.retweetCount || 0) + 1,
+    });
+
+    return true;
+  },
+});
+
+// Query
+export const isRetweeted = query({
+  args: {
+    userId: v.string(),
+    tweetId: v.id("tweets"),
+  },
+  handler: async (ctx, args) => {
+    const retweet = await ctx.db
+      .query("retweets")
+      .withIndex("by_user_tweet", (q) =>
+        q.eq("userId", args.userId).eq("tweetId", args.tweetId)
+      )
+      .first();
+    return Boolean(retweet);
+  },
+});
+
+export const getQuotedTweet = query({
+  args: { tweetId: v.id("tweets") },
+  handler: async (ctx, args) => {
+    const tweet = await ctx.db.get(args.tweetId);
+    if (!tweet) return null;
+
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("userId"), tweet.userId))
+      .first();
+
+    return {
+      ...tweet,
+      user,
+    };
+  },
+});
+
+export const getBookmarks = query({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const tweetIds = await ctx.db
+      .query("bookmarks")
+      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .order("desc")
+      .collect();
+
+    console.log("tweetIds", tweetIds);
+
+    // Use Promise.all to resolve all promises and .flat() to flatten the array
+    const tweets = (
+      await Promise.all(
+        tweetIds.map(async (id) => {
+          const tweetData = await ctx.db
+            .query("tweets")
+            .filter((q) => q.eq(q.field("_id"), id.tweetId))
+            .order("desc")
+            .collect();
+
+          const userInfo = await ctx.db
+            .query("users")
+            .filter((user) => user.eq(user.field("userId"), id.userId))
+            .first();
+
+          return {
+            tweetData,
+            userInfo,
+          };
+        })
+      )
+    ).flat();
+
+
+    return tweets;
   },
 });
