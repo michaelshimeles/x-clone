@@ -33,13 +33,20 @@ export const createUser = mutation({
 
 export const readUser = query({
   args: {
-    userId: v.string(),
+    userId: v.optional(v.string()),
+    username: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     try {
       const userInfo = await ctx.db
         .query("users")
-        .filter((user) => user.eq(user.field("userId"), args.userId))
+        .filter((user) => {
+          if (args?.userId) {
+            return user.eq(user.field("userId"), args.userId);
+          } else {
+            return user.eq(user.field("username"), args.username);
+          }
+        })
         .first();
 
       return userInfo;
