@@ -1,4 +1,4 @@
-import Provider from '@/app/provider'
+import Provider from '@/components/wrapper/provider'
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { ClerkProvider } from '@clerk/nextjs'
@@ -6,7 +6,7 @@ import { Analytics } from "@vercel/analytics/react"
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata } from 'next'
 import React from 'react'
-import HomeLayout from './(layout)/home-layout'
+import HomeLayout from '../components/wrapper/home-layout'
 import './globals.css'
 
 export const metadata: Metadata = {

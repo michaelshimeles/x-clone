@@ -1,6 +1,6 @@
 import PostInput from '@/components/post-input';
 import TabNavigation from '@/components/tab-navigation';
-import Tweet from '@/components/tweet';
+import Tweet from '@/app/profile/_components/tweet';
 
 export default async function HomePage() {
   return (
@@ -23,7 +23,7 @@ export default async function HomePage() {
             key={i}
             className="px-4 py-3 border-b border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
           >
-            <Tweet />
+            {/* <Tweet /> */}
           </div>
         ))}
       </main>

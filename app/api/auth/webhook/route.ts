@@ -1,4 +1,7 @@
+import { api } from "@/convex/_generated/api";
+import { shortName } from "@/utils/functions";
 import { WebhookEvent } from "@clerk/nextjs/server";
+import { fetchMutation } from "convex/nextjs";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
@@ -57,10 +60,22 @@ export async function POST(req: Request) {
     case "user.created":
       try {
         // user create
+        let name = shortName;
+
+        const userData = {
+          username: name,
+          email: payload?.data?.email_addresses?.[0]?.email_address,
+          name: payload?.data?.first_name + " " + payload?.data?.last_name,
+          profileImage: payload?.data?.profile_image_url,
+          userId: payload?.data?.id,
+          createdAt: Date.now(), // Add the missing createdAt field
+        };
+
+        await fetchMutation(api.user.createUser, userData);
 
         return NextResponse.json({
           status: 200,
-          message: "User info inserted",
+          message: "User info created",
         });
       } catch (error: any) {
         return NextResponse.json({
@@ -73,6 +88,7 @@ export async function POST(req: Request) {
     case "user.updated":
       try {
         // user update
+        console.log("user updated");
 
         return NextResponse.json({
           status: 200,

@@ -1,15 +1,8 @@
-import { Bell, Bookmark, Hash, Home, Mail, MoreHorizontal, PenSquare, User } from 'lucide-react';
+import { Bell, Bookmark, Hash, Home, Mail, MoreHorizontal, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import PostButton from '../post-button';
+import { useUser } from '@clerk/nextjs';
+import PostButton from '../post/post-button';
 
 const XLogo = () => (
   <svg viewBox="0 0 24 24" className="w-8 h-8" fill="currentColor">
@@ -35,7 +28,8 @@ const NavItem = ({ icon, label, path }: {
   );
 };
 
-const Sidebar = () => {
+const Sidebar = ({ userId }: { userId: string }) => {
+
   return (
     <div className="w-20 md:w-64 flex-shrink-0 p-4 overflow-y-auto md:ml-[135px]">
       <div className="flex flex-col h-full">
@@ -49,10 +43,9 @@ const Sidebar = () => {
           <NavItem icon={<Mail size={28} />} label="Messages" path="/messages" />
           <NavItem icon={<Bookmark size={28} />} label="Bookmarks" path="/bookmarks" />
           <NavItem icon={<User size={28} />} label="Profile" path="/profile" />
-          {/* <NavItem icon={<MoreHorizontal size={28} />} label="More" path="/" /> */}
+          <NavItem icon={<MoreHorizontal size={28} />} label="More" path='/settings' />
         </nav>
-        <PostButton />
-
+        <PostButton userId={userId} />
       </div>
     </div>
   );
