@@ -183,6 +183,7 @@ export const toggleLike = mutation({
     return true;
   },
 });
+
 // Query
 export const isLiked = query({
   args: {
@@ -205,11 +206,42 @@ export const getLikes = query({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
+    console.log("Query userId:", args.userId);
+
     const likes = await ctx.db
       .query("likes")
-      .withIndex("by_user_tweet", (q) => q.eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .order("desc")
       .collect();
-    return likes;
+
+    console.log('Retrieved likes:', likes);
+
+    // If we want to get the tweets and user info for each like
+    const likesWithDetails = await Promise.all(
+      likes.map(async (like) => {
+        const tweet = await ctx.db
+          .query("tweets")
+          .filter((q) => q.eq(q.field("_id"), like.tweetId))
+          .first();
+
+        if (!tweet) return null;
+
+        const userInfo = await ctx.db
+          .query("users")
+          .filter((user) => user.eq(user.field("userId"), tweet.userId))
+          .first();
+
+        if (!userInfo) return null;
+
+        return {
+          ...tweet,
+          userInfo,
+          likedAt: like.createdAt
+        };
+      })
+    );
+
+    return likesWithDetails.filter(Boolean);
   },
 });
 

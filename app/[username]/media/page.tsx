@@ -9,13 +9,12 @@ export default async function Media({ params }: { params: Promise<{ username: st
   const { userId } = await auth()
 
   const preloadedUserInfo: any = await preloadQuery(api.user.readUser, {
-    // userId: userId!,
     username: (await params)?.username
   });
 
-
-
-  console.log('preloadedUserInfo', preloadedUserInfo._valueJSON?.username)
+  let currentUserId = userId
+  let userProfileId = preloadedUserInfo?._valueJSON.userId
+  let userProfile = preloadedUserInfo?._valueJSON
 
   return (
     <div className="border-l border-r border-gray-200 min-h-screen w-full">
@@ -25,7 +24,7 @@ export default async function Media({ params }: { params: Promise<{ username: st
 
       <main>
         <div className="border-b border-gray-200">
-        <UserInfo preloadedUserInfo={preloadedUserInfo} userId={userId} />
+          <UserInfo preloadedUserInfo={preloadedUserInfo} currentUserId={currentUserId!} userProfileId={userProfileId} />
         </div>
 
         {/* Tweets */}

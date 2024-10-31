@@ -8,9 +8,12 @@ export default async function Replies({ params }: { params: Promise<{ username: 
   const { userId } = await auth()
 
   const preloadedUserInfo: any = await preloadQuery(api.user.readUser, {
-    // userId: userId!,
     username: (await params)?.username
   });
+
+  let currentUserId = userId
+  let userProfileId = preloadedUserInfo?._valueJSON.userId
+  let userProfile = preloadedUserInfo?._valueJSON
 
 
   return (
@@ -21,7 +24,7 @@ export default async function Replies({ params }: { params: Promise<{ username: 
 
       <main>
         <div className="border-b border-gray-200">
-          <UserInfo preloadedUserInfo={preloadedUserInfo} userId={userId} />
+          <UserInfo preloadedUserInfo={preloadedUserInfo} currentUserId={currentUserId!} userProfileId={userProfileId} />
         </div>
 
         {/* Tweets */}

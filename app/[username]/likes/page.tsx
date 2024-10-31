@@ -1,9 +1,10 @@
 import { api } from '@/convex/_generated/api';
 import { auth } from '@clerk/nextjs/server';
 import { preloadQuery } from 'convex/nextjs';
+import { redirect } from 'next/navigation';
 import ProfileHeader from '../_components/header';
 import UserInfo from '../_components/user-info';
-import { redirect } from 'next/navigation';
+import LikedTweetList from './_components/liked-tweet-list';
 
 export default async function Likes({ params }: { params: Promise<{ username: string }> }) {
   const { userId } = await auth()
@@ -14,13 +15,14 @@ export default async function Likes({ params }: { params: Promise<{ username: st
     username: (await params)?.username
   });
 
-  if (userId !== preloadedUserInfo?._valueJSON?.userId) {
+
+  let currentUserId = userId
+  let userProfileId = preloadedUserInfo?._valueJSON.userId
+
+  if (currentUserId !== userProfileId) {
     redirect("/")
   }
 
-  // const preloadedUserInfo = await preloadQuery(api.user.readUser, {
-  //   userId: userId!
-  // });
 
   const preloadedLikes = await preloadQuery(api.tweets.getLikes, {
     userId: userId!
@@ -40,6 +42,7 @@ export default async function Likes({ params }: { params: Promise<{ username: st
         </div>
 
         {/* Render Liked tweets here */}
+        <LikedTweetList userInfo={preloadedLikes._valueJSON} currentUserId={currentUserId!} userProfileId={userProfileId} />
       </main>
     </div>
   )

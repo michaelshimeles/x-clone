@@ -76,12 +76,12 @@ export default defineSchema({
     createdAt: v.number(),
   }).index("by_user_tweet", ["bookmarkedByUserId", "tweetId"]),
 
-  followers: defineTable({
-    followerId: v.id("users"),
-    followedId: v.id("users"),
+  follows: defineTable({
+    followerId: v.string(), // ID of user who is following
+    followingId: v.string(), // ID of user being followed
     createdAt: v.number(),
   })
     .index("by_follower", ["followerId"])
-    .index("by_followed", ["followedId"])
-    .index("by_both", ["followerId", "followedId"]),
+    .index("by_following", ["followingId"])
+    .index("by_both", ["followerId", "followingId"]),
 });
