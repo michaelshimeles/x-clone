@@ -6,9 +6,9 @@ import ImageModal from './image-modal';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const UserInfo = ({ preloadedUserInfo }: any) => {
+const UserInfo = ({ preloadedUserInfo, userId }: any) => {
   const pathname = usePathname()
-  console.log('pathname', pathname)
+
   const userInfo = preloadedUserInfo?._valueJSON;
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
@@ -134,7 +134,7 @@ const UserInfo = ({ preloadedUserInfo }: any) => {
         <div className="flex mt-4 border-b">
           {[{
             tab: 'Posts',
-            path:  `/${userInfo?.username}`
+            path: `/${userInfo?.username}`
           }, {
             tab: 'Replies',
             path: `/${userInfo?.username}/replies`
@@ -144,16 +144,22 @@ const UserInfo = ({ preloadedUserInfo }: any) => {
           }, {
             tab: 'Likes',
             path: `/${userInfo?.username}/likes`
-          }].map((tab, index) => (
-            <Link
-              href={tab?.path}
-              key={index}
-              className={`px-4 text-center py-4 font-medium hover:bg-gray-50 relative w-full ${pathname === tab?.path ? 'font-bold after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-500 after:rounded-full' : 'text-gray-600'
-                }`}
-            >
-              {tab?.tab}
-            </Link>
-          ))}
+          }].map((tab, index: number) => {
+            if ((userId !== userInfo?.userId && tab.tab === "Likes")) {
+              return null
+            } else {
+              return (
+                <Link
+                  href={tab?.path}
+                  key={index}
+                  className={`px-4 text-center py-4 font-medium hover:bg-gray-50 relative w-full ${pathname === tab?.path ? 'font-bold after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-500 after:rounded-full' : 'text-gray-600'
+                    }`}
+                >
+                  {tab?.tab}
+                </Link>
+              )
+            }
+          })}
         </div>
       </div>
 

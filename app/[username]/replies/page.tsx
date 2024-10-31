@@ -4,18 +4,14 @@ import { preloadQuery } from 'convex/nextjs';
 import ProfileHeader from '../_components/header';
 import UserInfo from '../_components/user-info';
 
-export default async function Replies() {
+export default async function Replies({ params }: { params: Promise<{ username: string }> }) {
   const { userId } = await auth()
 
-  const preloadedUserInfo = await preloadQuery(api.user.readUser, {
-    userId: userId!
+  const preloadedUserInfo: any = await preloadQuery(api.user.readUser, {
+    // userId: userId!,
+    username: (await params)?.username
   });
 
-  const preloadedTweets = await preloadQuery(api.tweets.getTweets, {
-    userId: userId!
-  });
-
-  console.log('preloadedTweets', preloadedTweets._valueJSON)
 
   return (
     <div className="border-l border-r border-gray-200 min-h-screen w-full">
@@ -25,7 +21,7 @@ export default async function Replies() {
 
       <main>
         <div className="border-b border-gray-200">
-          <UserInfo preloadedUserInfo={preloadedUserInfo} />
+          <UserInfo preloadedUserInfo={preloadedUserInfo} userId={userId} />
         </div>
 
         {/* Tweets */}

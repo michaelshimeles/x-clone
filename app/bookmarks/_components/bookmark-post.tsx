@@ -9,21 +9,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-export default function Component({
-  tweet,
-  userId,
-  username,
-  avatar,
-  name,
-  date,
-  verified,
-  content,
-  image,
-  imageAlt,
-  comments = 0,
-  retweets = 0,
-  likes = 0,
-}: {
+interface BookmarkPostProps {
   tweet: any
   userId: string
   username: string
@@ -37,35 +23,46 @@ export default function Component({
   comments?: number
   retweets?: number
   likes?: number
-}) {
+}
+
+export default function BookmarkPost({
+  tweet,
+  userId,
+  username,
+  avatar,
+  name,
+  date,
+  verified,
+  content,
+  image,
+  imageAlt,
+  comments = 0,
+  retweets = 0,
+  likes = 0,
+}: BookmarkPostProps) {
   const [isRetweeted, setIsRetweeted] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
+  const [isBookmarked, setIsBookmarked] = useState(true) // Start as true since this is a bookmarked tweet
   const toggleRetweet = useMutation(api.tweets.toggleRetweet);
   const toggleLike = useMutation(api.tweets.toggleLike);
   const toggleBookmark = useMutation(api.tweets.toggleBookmark);
 
   // Check if tweet is a retweet
-  const isRetweet = tweet.isRetweet;
+  const isRetweet = tweet?.isRetweet || null;
   const quotedTweet = useQuery(api.tweets.getQuotedTweet,
     isRetweet ? { tweetId: tweet.quotedTweetId } : "skip"
   );
 
   useEffect(() => {
     const checkInteractions = async () => {
-      // Always check the original tweet's ID for interactions
       const originalTweetId = isRetweet ? tweet.quotedTweetId : tweet._id;
 
-      // Check interactions on both tweets if it's a retweet
-      const [retweetStatus, likeStatus, bookmarkStatus] = await Promise.all([
+      const [retweetStatus, likeStatus] = await Promise.all([
         fetchQuery(api.tweets.isRetweeted, {
           userId,
           tweetId: originalTweetId
         }),
         fetchQuery(api.tweets.isLiked, {
-          userId,
-          tweetId: originalTweetId
-        }),
-        fetchQuery(api.tweets.isBookmarked, {
           userId,
           tweetId: originalTweetId
         })
@@ -92,19 +89,17 @@ export default function Component({
     }
   };
 
-
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     try {
-      // Always use original tweet ID
       const originalTweetId = isRetweet ? tweet.quotedTweetId : tweet._id;
       const status = await toggleLike({
         userId,
         tweetId: originalTweetId
       });
-      console.log('status', status)
       setIsLiked(status);
+      toast.success(status ? "Liked" : "Unliked");
     } catch (error) {
       toast.error("Failed to like tweet");
     }
@@ -114,13 +109,14 @@ export default function Component({
     e.preventDefault()
     e.stopPropagation()
     try {
+      const originalTweetId = isRetweet ? tweet.quotedTweetId : tweet._id;
       const status = await toggleBookmark({
-        userId,
-        tweetId: tweet._id
+        bookmarkedByUserId: userId,
+        tweetAuthorUserId: tweet.userId,
+        tweetId: originalTweetId
       });
-
-      console.log('status', status)
-      toast.success("Removed from Bookmarks");
+      setIsBookmarked(status);
+      toast.success(status ? "Added to Bookmarks" : "Removed from Bookmarks");
     } catch (error) {
       toast.error("Failed to bookmark tweet");
     }
@@ -187,7 +183,7 @@ export default function Component({
               <div className="flex items-center space-x-4">
                 <button onClick={handleBookmark}>
                   <Bookmark
-                    className={`w-5 h-5 fill-current text-blue-500`}
+                    className={`w-5 h-5 ${isBookmarked ? 'fill-current text-blue-500' : 'hover:text-blue-500'}`}
                   />
                 </button>
                 <button

@@ -70,10 +70,11 @@ export default defineSchema({
   }).index("by_user_tweet", ["userId", "tweetId"]),
 
   bookmarks: defineTable({
-    userId: v.string(),
-    tweetId: v.id("tweets"),
+    bookmarkedByUserId: v.string(), // ID of user who bookmarked
+    tweetAuthorUserId: v.string(), // ID of user who wrote the tweet
+    tweetId: v.id("tweets"), // ID of the bookmarked tweet
     createdAt: v.number(),
-  }).index("by_user_tweet", ["userId", "tweetId"]),
+  }).index("by_user_tweet", ["bookmarkedByUserId", "tweetId"]),
 
   followers: defineTable({
     followerId: v.id("users"),

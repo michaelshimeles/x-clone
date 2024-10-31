@@ -1,20 +1,18 @@
 import { api } from '@/convex/_generated/api';
-// import { auth } from '@clerk/nextjs/server';
 import { preloadQuery } from 'convex/nextjs';
 import ProfileHeader from './_components/header';
 import TweetList from './_components/tweet-list';
 import UserInfo from './_components/user-info';
+import { auth } from '@clerk/nextjs/server';
 
 // app/profile/page.tsx
 export default async function Profile({ params }: { params: Promise<{ username: string }> }) {
-  // const { userId } = await auth()
+  const { userId } = await auth()
 
   const preloadedUserInfo: any = await preloadQuery(api.user.readUser, {
     // userId: userId!,
     username: (await params)?.username
   });
-
-  console.log('preloadedUserInfo', preloadedUserInfo)
 
   return (
     <div className="border-l border-r border-gray-200 min-h-screen w-full">
@@ -24,11 +22,11 @@ export default async function Profile({ params }: { params: Promise<{ username: 
 
       <main>
         <div className="border-b border-gray-200">
-          <UserInfo preloadedUserInfo={preloadedUserInfo} />
+          <UserInfo preloadedUserInfo={preloadedUserInfo} userId={userId} />
         </div>
 
         {/* Tweets */}
-        <TweetList userInfo={preloadedUserInfo?._valueJSON} userId={preloadedUserInfo?._valueJSON?.userId!}  />
+        <TweetList userInfo={preloadedUserInfo?._valueJSON} userId={preloadedUserInfo?._valueJSON?.userId!} />
       </main>
     </div>
   )

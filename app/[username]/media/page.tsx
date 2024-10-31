@@ -5,16 +5,15 @@ import ProfileHeader from '../_components/header';
 import MediaGrid from '../_components/media-grid';
 import UserInfo from '../_components/user-info';
 
-export default async function Media() {
+export default async function Media({ params }: { params: Promise<{ username: string }> }) {
   const { userId } = await auth()
 
   const preloadedUserInfo: any = await preloadQuery(api.user.readUser, {
-    userId: userId!
+    // userId: userId!,
+    username: (await params)?.username
   });
 
-  const preloadedTweets: any = await preloadQuery(api.tweets.getTweets, {
-    userId: userId!
-  });
+
 
   console.log('preloadedUserInfo', preloadedUserInfo._valueJSON?.username)
 
@@ -26,11 +25,11 @@ export default async function Media() {
 
       <main>
         <div className="border-b border-gray-200">
-          <UserInfo preloadedUserInfo={preloadedUserInfo} />
+        <UserInfo preloadedUserInfo={preloadedUserInfo} userId={userId} />
         </div>
 
         {/* Tweets */}
-        <MediaGrid tweets={preloadedTweets._valueJSON} username={preloadedUserInfo._valueJSON?.username} />
+        <MediaGrid userInfo={preloadedUserInfo._valueJSON} userId={userId} username={preloadedUserInfo._valueJSON?.username} />
       </main>
     </div>
   )

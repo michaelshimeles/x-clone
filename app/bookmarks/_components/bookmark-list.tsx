@@ -1,15 +1,15 @@
-// app/components/tweet-list.tsx
 'use client'
 
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import BookmarkPost from './bookmark-post';
 
-export default function BookmarkList({ userId }: any) {
-  const tweets = useQuery(api.tweets.getBookmarks, { userId })
+export default function BookmarkList({ userId }: { userId: string }) {
+  const bookmarkedTweets = useQuery(api.tweets.getBookmarks, { userId });
 
-  console.log('tweets', tweets)
-  if (!tweets?.length) {
+  console.log('bookmarkedTweets', bookmarkedTweets);
+
+  if (!bookmarkedTweets?.length) {
     return (
       <div className="p-4 text-center text-gray-500 mt-[2rem]">
         No bookmarks yet
@@ -17,28 +17,27 @@ export default function BookmarkList({ userId }: any) {
     );
   }
 
-  console.log('tweets', tweets)
   return (
     <>
-      {tweets?.map((bookmark: any, index: number) => {
+      {bookmarkedTweets?.map((tweet: any) => {
         return (
           <BookmarkPost
-            key={index}
-            avatar={bookmark?.userInfo?.profileImage}
-            name={bookmark?.userInfo?.name}
-            username={bookmark?.userInfo?.username}
-            date={bookmark?.tweetData?.[0]?.createdAt}
-            verified={true}
-            content={bookmark?.tweetData?.[0]?.content}
-            image={bookmark?.tweetData?.[0]?.images?.[0]}
-            imageAlt="Example of shadcn/ui customization"
-            comments={bookmark?.tweetData?.[0]?.replyCount}
-            retweets={bookmark?.tweetData?.[0]?.retweetCount}
-            likes={bookmark?.tweetData?.[0]?.likeCount}
-            tweet={bookmark?.tweetData?.[0]}
-            userId={userId!}
+            key={tweet._id}
+            tweet={tweet}
+            userId={userId}
+            username={tweet.authorInfo.username}
+            avatar={tweet.authorInfo.profileImage}
+            name={tweet.authorInfo.name}
+            date={tweet._creationTime}
+            verified={tweet.authorInfo.verified}
+            content={tweet.content}
+            image={tweet.images?.[0]}
+            imageAlt={`Image from ${tweet.authorInfo.name}'s tweet`}
+            comments={tweet.replyCount || 0}
+            retweets={tweet.retweetCount || 0}
+            likes={tweet.likeCount || 0}
           />
-        )
+        );
       })}
     </>
   );

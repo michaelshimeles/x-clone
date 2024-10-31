@@ -3,13 +3,24 @@ import { auth } from '@clerk/nextjs/server';
 import { preloadQuery } from 'convex/nextjs';
 import ProfileHeader from '../_components/header';
 import UserInfo from '../_components/user-info';
+import { redirect } from 'next/navigation';
 
-export default async function Likes() {
+export default async function Likes({ params }: { params: Promise<{ username: string }> }) {
   const { userId } = await auth()
 
-  const preloadedUserInfo = await preloadQuery(api.user.readUser, {
-    userId: userId!
+
+  const preloadedUserInfo: any = await preloadQuery(api.user.readUser, {
+    // userId: userId!,
+    username: (await params)?.username
   });
+
+  if (userId !== preloadedUserInfo?._valueJSON?.userId) {
+    redirect("/")
+  }
+
+  // const preloadedUserInfo = await preloadQuery(api.user.readUser, {
+  //   userId: userId!
+  // });
 
   const preloadedLikes = await preloadQuery(api.tweets.getLikes, {
     userId: userId!
@@ -25,7 +36,7 @@ export default async function Likes() {
 
       <main>
         <div className="border-b border-gray-200">
-          <UserInfo preloadedUserInfo={preloadedUserInfo} />
+          <UserInfo preloadedUserInfo={preloadedUserInfo} userId={userId} />
         </div>
 
         {/* Render Liked tweets here */}

@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from '@/convex/_generated/api';
+import { useUser } from "@clerk/nextjs";
 import { fetchMutation, fetchQuery } from 'convex/nextjs';
 import { useMutation, useQuery } from "convex/react";
 import { formatDistanceToNow } from 'date-fns';
@@ -23,6 +24,9 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const pathname = usePathname();
+  const { user } = useUser()
+
+  console.log('me', user?.id)
 
   // Mutations
   const toggleRetweet = useMutation(api.tweets.toggleRetweet);
@@ -52,7 +56,7 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
           tweetId: originalTweetId
         }),
         fetchQuery(api.tweets.isBookmarked, {
-          userId,
+          bookmarkedByUserId: userId,
           tweetId: originalTweetId
         })
       ]);
@@ -63,6 +67,30 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
     };
     checkInteractions();
   }, [userId, tweet._id, tweet.quotedTweetId, isRetweet]);
+
+  // Update the handleBookmark function
+  const handleBookmark = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const originalTweetId = isRetweet ? tweet.quotedTweetId : tweet._id;
+      const originalTweet = isRetweet ? quotedTweet : tweet;
+
+      console.log('originalTweet', originalTweet)
+      console.log('bookmarkedByUserId', userId)
+
+      const status = await toggleBookmark({
+        bookmarkedByUserId: user?.id!,
+        tweetAuthorUserId: originalTweet.userId,
+        tweetId: originalTweetId
+      });
+
+      setIsBookmarked(status);
+      toast.success(status ? "Added to Bookmarks" : "Removed from Bookmarks");
+    } catch (error) {
+      toast.error("Failed to bookmark tweet");
+    }
+  };
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -114,20 +142,6 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
     }
   };
 
-  const handleBookmark = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      const status = await toggleBookmark({
-        userId,
-        tweetId: isRetweet ? tweet.quotedTweetId : tweet._id
-      });
-      setIsBookmarked(status);
-      toast.success(status ? "Added to Bookmarks" : "Removed from Bookmarks");
-    } catch (error) {
-      toast.error("Failed to bookmark tweet");
-    }
-  };
 
   const handleDropdownClick = (e: React.MouseEvent) => {
     e.preventDefault();
