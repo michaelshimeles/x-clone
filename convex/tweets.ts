@@ -34,43 +34,6 @@ export const createTweet = mutation({
   },
 });
 
-// Mutation for liking a tweet
-export const likeTweet = mutation({
-  args: {
-    tweetId: v.id("tweets"),
-    userId: v.string(),
-  },
-  handler: async (ctx, args) => {
-    // Check if already liked
-    const existingLike = await ctx.db
-      .query("likes")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("userId"), args.userId),
-          q.eq(q.field("tweetId"), args.tweetId)
-        )
-      )
-      .first();
-
-    if (existingLike) {
-      return;
-    }
-
-    // Create like record
-    await ctx.db.insert("likes", {
-      userId: args.userId,
-      tweetId: args.tweetId,
-      createdAt: Date.now(),
-    });
-
-    // Increment like count
-    const tweet = await ctx.db.get(args.tweetId);
-    await ctx.db.patch(args.tweetId, {
-      likeCount: (tweet?.likeCount ?? 0) + 1,
-    });
-  },
-});
-
 // convex/tweets.ts
 export const getTweets = query({
   args: {

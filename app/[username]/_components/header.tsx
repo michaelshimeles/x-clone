@@ -2,7 +2,7 @@
 import { ArrowLeft, BadgeCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-export default function ProfileHeader({ username = "Micky", postCount = 5872 }) {
+export default function ProfileHeader({ userProfile }: any) {
   const router = useRouter()
 
   return (
@@ -13,11 +13,11 @@ export default function ProfileHeader({ username = "Micky", postCount = 5872 }) 
 
       <div>
         <div className="flex items-center gap-1">
-          <h1 className="text-xl font-semibold text-gray-900">{username}</h1>
+          <h1 className="text-xl font-semibold text-gray-900">{userProfile?.username}</h1>
           <BadgeCheck className="w-5 h-5 text-blue-500" />
         </div>
         <p className="text-gray-600 text-xs">
-          {postCount.toLocaleString()} posts
+          {/* {postCount.toLocaleString()} posts */}
         </p>
       </div>
     </div>

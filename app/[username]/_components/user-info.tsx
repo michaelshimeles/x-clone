@@ -6,7 +6,7 @@ import ImageModal from './image-modal';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const UserInfo = ({ preloadedUserInfo, userId }: any) => {
+const UserInfo = ({ preloadedUserInfo, currentUserId, userProfileId }: any) => {
   const pathname = usePathname()
 
   const userInfo = preloadedUserInfo?._valueJSON;
@@ -74,9 +74,9 @@ const UserInfo = ({ preloadedUserInfo, userId }: any) => {
               />
             </div>
           </div>
-          <div className="flex gap-2 mt-4">
+          {currentUserId === userProfileId && <div className="flex gap-2 mt-4">
             <EditProfile userInfo={userInfo} />
-          </div>
+          </div>}
         </div>
 
         {/* Name and Username */}
@@ -131,24 +131,19 @@ const UserInfo = ({ preloadedUserInfo, userId }: any) => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex mt-4 border-b">
-          {[{
-            tab: 'Posts',
-            path: `/${userInfo?.username}`
-          }, {
-            tab: 'Replies',
-            path: `/${userInfo?.username}/replies`
-          }, {
-            tab: 'Media',
-            path: `/${userInfo?.username}/media`
-          }, {
-            tab: 'Likes',
-            path: `/${userInfo?.username}/likes`
-          }].map((tab, index: number) => {
-            if ((userId !== userInfo?.userId && tab.tab === "Likes")) {
-              return null
-            } else {
-              return (
+        {
+          currentUserId !== userProfileId ?
+            <div className="flex mt-4 border-b">
+              {[{
+                tab: 'Posts',
+                path: `/${userInfo?.username}`
+              }, {
+                tab: 'Replies',
+                path: `/${userInfo?.username}/replies`
+              }, {
+                tab: 'Media',
+                path: `/${userInfo?.username}/media`
+              }].map((tab, index: number) => (
                 <Link
                   href={tab?.path}
                   key={index}
@@ -157,10 +152,33 @@ const UserInfo = ({ preloadedUserInfo, userId }: any) => {
                 >
                   {tab?.tab}
                 </Link>
-              )
-            }
-          })}
-        </div>
+              ))}
+
+            </div> : <div className="flex mt-4 border-b">
+              {[{
+                tab: 'Posts',
+                path: `/${userInfo?.username}`
+              }, {
+                tab: 'Replies',
+                path: `/${userInfo?.username}/replies`
+              }, {
+                tab: 'Media',
+                path: `/${userInfo?.username}/media`
+              }, {
+                tab: 'Likes',
+                path: `/${userInfo?.username}/likes`
+              }].map((tab, index: number) => (
+                <Link
+                  href={tab?.path}
+                  key={index}
+                  className={`px-4 text-center py-4 font-medium hover:bg-gray-50 relative w-full ${pathname === tab?.path ? 'font-bold after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-500 after:rounded-full' : 'text-gray-600'
+                    }`}
+                >
+                  {tab?.tab}
+                </Link>
+              ))}
+
+            </div>}
       </div>
 
       {/* Modal Component */}

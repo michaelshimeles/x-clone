@@ -18,7 +18,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-export default function Tweet({ tweet, userId, username }: { tweet: any, userId: string, username: string }) {
+export default function Tweet({ tweet, userProfileId, username, currentUserId }: { tweet: any, userProfileId: string, username: string, currentUserId: string }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRetweeted, setIsRetweeted] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -48,15 +48,15 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
       // Check interactions on both tweets if it's a retweet
       const [retweetStatus, likeStatus, bookmarkStatus] = await Promise.all([
         fetchQuery(api.tweets.isRetweeted, {
-          userId,
+          userId: userProfileId,
           tweetId: originalTweetId
         }),
         fetchQuery(api.tweets.isLiked, {
-          userId,
+          userId: userProfileId,
           tweetId: originalTweetId
         }),
         fetchQuery(api.tweets.isBookmarked, {
-          bookmarkedByUserId: userId,
+          bookmarkedByUserId: userProfileId,
           tweetId: originalTweetId
         })
       ]);
@@ -66,7 +66,7 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
       setIsBookmarked(bookmarkStatus);
     };
     checkInteractions();
-  }, [userId, tweet._id, tweet.quotedTweetId, isRetweet]);
+  }, [userProfileId, tweet._id, tweet.quotedTweetId, isRetweet]);
 
   // Update the handleBookmark function
   const handleBookmark = async (e: React.MouseEvent) => {
@@ -77,7 +77,7 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
       const originalTweet = isRetweet ? quotedTweet : tweet;
 
       console.log('originalTweet', originalTweet)
-      console.log('bookmarkedByUserId', userId)
+      console.log('bookmarkedByUserId', userProfileId)
 
       const status = await toggleBookmark({
         bookmarkedByUserId: user?.id!,
@@ -99,7 +99,7 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
     try {
       await fetchMutation(api.tweets.deleteTweet, {
         tweetId: tweet._id,
-        userId: userId
+        userId: userProfileId
       });
       toast.success("Tweet deleted successfully");
     } catch (error) {
@@ -115,7 +115,7 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
     e.stopPropagation();
     try {
       const status = await toggleRetweet({
-        userId,
+        userId: currentUserId,
         tweetId: isRetweet ? tweet.quotedTweetId : tweet._id
       });
       setIsRetweeted(status);
@@ -132,7 +132,7 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
       // Always use original tweet ID
       const originalTweetId = isRetweet ? tweet.quotedTweetId : tweet._id;
       const status = await toggleLike({
-        userId,
+        userId: currentUserId,
         tweetId: originalTweetId
       });
       console.log('status', status)
@@ -148,7 +148,7 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
     e.stopPropagation();
   };
 
-  const isOwner = tweet.userId === userId;
+  const isOwner = tweet.userId === userProfileId;
   const displayTweet = isRetweet ? quotedTweet : tweet;
 
   const isLoading = !displayTweet?.user;
@@ -159,7 +159,7 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
 
 
   return (
-    <Link href={`${username}/${tweet?._id}`} key={tweet._id}>
+    <Link href={`${displayTweet?.user?.username}/${tweet?._id}`} key={tweet._id}>
       {isRetweet && (
         <div className="flex items-center gap-2 mb-2 pl-12 text-gray-500 text-sm">
           <Repeat2 className="w-4 h-4" />
@@ -211,7 +211,7 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
                     className="flex items-center space-x-1 group"
                     onClick={handleRetweet}
                   >
-                    <Repeat2 className={`w-5 h-5 ${displayTweet?.retweetCount > 0 && isRetweeted ? 'fill-current text-green-500' : 'group-hover:text-green-500'}`} />
+                    <Repeat2 className={`w-5 h-5 ${displayTweet?.retweetCount > 0 && isRetweeted ? 'fill text-green-500' : 'group-hover:text-green-500'}`} />
                     <span className={`text-xs ${displayTweet?.retweetCount > 0 && isRetweeted ? 'text-green-500' : 'group-hover:text-green-500'}`}>
                       {displayTweet?.retweetCount || 0}
                     </span>
@@ -227,10 +227,6 @@ export default function Tweet({ tweet, userId, username }: { tweet: any, userId:
                       {displayTweet?.likeCount || 0}
                     </span>
                   </button>
-                  {/* <button className="flex items-center space-x-1 group">
-                    <BarChart2 className="w-5 h-5 group-hover:text-blue-500" />
-                    <span className="text-xs group-hover:text-blue-500">1K</span>
-                  </button> */}
                 </div>
                 <div className="flex items-center space-x-4">
                   <button onClick={handleBookmark}>
