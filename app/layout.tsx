@@ -40,7 +40,6 @@ export default async function RootLayout({
 }) {
 
   const { userId } = await auth()
-
   return (
     <ClerkProvider dynamic>
       <html lang="en" suppressHydrationWarning>
