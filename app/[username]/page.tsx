@@ -1,9 +1,9 @@
 import { api } from '@/convex/_generated/api';
+import { auth } from '@clerk/nextjs/server';
 import { preloadQuery } from 'convex/nextjs';
 import ProfileHeader from './_components/header';
 import TweetList from './_components/tweet-list';
 import UserInfo from './_components/user-info';
-import { auth } from '@clerk/nextjs/server';
 
 // app/profile/page.tsx
 export default async function Profile({ params }: { params: Promise<{ username: string }> }) {

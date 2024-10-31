@@ -18,7 +18,6 @@ const NavItem = ({ icon, label, path }: {
   path: string
 }) => {
   const pathname = usePathname();
-
   return (
     <Link
       href={path}
@@ -32,13 +31,16 @@ const NavItem = ({ icon, label, path }: {
 
 const Sidebar = ({ userId }: { userId: string }) => {
 
+  console.log("userId", userId)
   const userInfo = useQuery(api.user.readUser, { userId })
+  console.log('userInfo', userInfo?.username)
 
   return (
     <div className="w-20 md:w-64 flex-shrink-0 p-4 overflow-y-auto md:ml-[135px]">
       <div className="flex flex-col h-full">
-        <Link href="/" className="p-4">
+        <Link href="/" className="flex justify-start items-center gap-2 p-4">
           <XLogo />
+          <p className='text-white text-sm bg-black border rounded-full px-3'>{userInfo?.username}</p>
         </Link>
         <nav className="space-y-1 mt-2">
           <NavItem icon={<Home size={28} />} label="Home" path="/" />
