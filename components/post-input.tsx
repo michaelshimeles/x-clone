@@ -2,7 +2,7 @@
 import { Camera, MapPin, Smile, Type } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
-export default function PostInput() {
+export default function PostInput({ userInfo }: any) {
   const textareaRef = useRef(null)
   const [expandInput, setExpandInput] = useState<Boolean>(false)
 
@@ -30,7 +30,7 @@ export default function PostInput() {
       <div className="flex items-start space-x-3">
         <div className="flex-shrink-0">
           <img
-            src="https://placehold.co/48x48"
+            src={userInfo?.profileImage}
             alt="Profile picture"
             width={48}
             height={48}

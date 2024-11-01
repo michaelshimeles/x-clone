@@ -76,6 +76,18 @@ export default defineSchema({
     createdAt: v.number(),
   }).index("by_user_tweet", ["bookmarkedByUserId", "tweetId"]),
 
+  notifications: defineTable({
+    userId: v.string(), // User who receives the notification
+    actorId: v.string(), // User who triggered the notification
+    type: v.string(), // notification type: "like", "retweet", "follow", "reply"
+    tweetId: v.optional(v.id("tweets")), // Optional: related tweet
+    read: v.boolean(), // Whether notification has been read
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_read", ["userId", "read"])
+    .index("by_creation", ["createdAt"]),
+
   follows: defineTable({
     followerId: v.string(), // ID of user who is following
     followingId: v.string(), // ID of user being followed

@@ -38,7 +38,7 @@ export default async function Likes({ params }: { params: Promise<{ username: st
 
       <main>
         <div className="border-b border-gray-200">
-          <UserInfo preloadedUserInfo={preloadedUserInfo} userId={userId} />
+          <UserInfo preloadedUserInfo={preloadedUserInfo} currentUserId={currentUserId!} userProfileId={userProfileId} />
         </div>
 
         {/* Render Liked tweets here */}

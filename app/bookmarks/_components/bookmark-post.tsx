@@ -163,7 +163,7 @@ export default function BookmarkPost({
                   className="flex items-center space-x-1 group"
                   onClick={handleRetweet}
                 >
-                  <Repeat2 className={`w-5 h-5 ${isRetweeted ? 'fill-current text-green-500' : 'group-hover:text-green-500'}`} />
+                  <Repeat2 className={`w-5 h-5 ${isRetweeted ? 'fill text-green-500' : 'group-hover:text-green-500'}`} />
                   <span className={`text-xs ${isRetweeted ? 'text-green-500' : 'group-hover:text-green-500'}`}>
                     {retweets}
                   </span>

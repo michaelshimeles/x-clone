@@ -1,110 +1,89 @@
-import { Search, Settings } from 'lucide-react'
+import { formatDistanceToNow } from 'date-fns'
+import Image from 'next/image'
+import Link from 'next/link'
 
 interface NewsItemProps {
   title: string
   time: string
-  category: string
-  posts: string
   image: string
+  category?: string
 }
 
-export default function Explore(): JSX.Element {
+export default async function Explore() {
+  const response = await fetch('https://newsapi.org/v2/top-headlines?country=us&apiKey=366e9399aae1498da8fa1722fff51ce0')
+  const result = await response.json()
+
   return (
     <div className="w-full border min-h-screen">
       <div className="">
-        <div className='p-4'>
-          <div className="flex items-center bg-white rounded-full px-4 py-2 border">
-            <Search className="w-5 h-5 text-gray-400 mr-2" />
-            <input type="text" placeholder="Search" className="flex-grow outline-none text-gray-600" />
-            <Settings className="w-5 h-5 text-gray-400 ml-2" />
-          </div>
-        </div>
+        <header className="flex justify-between items-center p-4 border-b">
+          <h1 className="text-xl font-bold">News</h1>
+        </header>
 
-        <div className="flex justify-between space-x-6 text-sm font-medium text-gray-500 p-4">
-          <span>For you</span>
-          <span>Trending</span>
-          <span className="text-blue-500 border-b-2 border-blue-500 pb-1">News</span>
-          <span>Sports</span>
-          <span>Entertainment</span>
-          <span>Saved</span>
-        </div>
+        {result?.articles?.[0] && (
+          <Link href={result.articles[0].url} target="_blank">
+            <FeaturedNewsItem
+              title={result.articles[0].title}
+              time={result.articles[0].publishedAt}
+              image={result.articles[0].urlToImage}
+              category="NBA"
+            />
+          </Link>
+        )}
 
-        <div className="space-y-4">
-          <NewsItem
-            title="Trump's McDonald's Ice Cream Pledge"
-            time="2 hours ago"
-            category="Politics"
-            posts="136K"
-            image="https://placehold.co/80x80"
-          />
-
-          <NewsItem
-            title="BC Election: Tight Race for Majority"
-            time="10 hours ago"
-            category="Politics"
-            posts="29K"
-            image="https://placehold.co/80x80"
-          />
-
-          <NewsItem
-            title="Michelle Obama's Powerful Trump Critique"
-            time="2 hours ago"
-            category="Politics"
-            posts="217K"
-            image="https://placehold.co/80x80"
-          />
-
-          <NewsItem
-            title="Kamala Harris Heckled at Kalamazoo Rally"
-            time="3 hours ago"
-            category="Politics"
-            posts="86K"
-            image="https://placehold.co/80x80"
-          />
-
-          <NewsItem
-            title="Penn State Wrestlers Endorse Trump"
-            time="1 day ago"
-            category="Politics"
-            posts="1.2M"
-            image="https://placehold.co/80x80"
-          />
-
-          <NewsItem
-            title="UN Warns of Genocide Risk in North Gaza"
-            time="10 hours ago"
-            category="Genocide"
-            posts="292K"
-            image="https://placehold.co/80x80"
-          />
-
-          <NewsItem
-            title="Trump's Tariff Plan to Replace Income Tax"
-            time="7 hours ago"
-            category="Politics"
-            posts="166K"
-            image="https://placehold.co/80x80"
-          />
+        <div className="space-y-4 mt-4">
+          {result?.articles?.slice(1).map((article: any) => (
+            <Link href={article?.url} target="_blank" key={article.title}>
+              <NewsItem
+                title={article?.title}
+                time={article?.publishedAt}
+                image={article?.urlToImage}
+              />
+            </Link>
+          ))}
         </div>
       </div>
     </div>
   )
 }
 
-function NewsItem({ title, time, category, posts, image }: NewsItemProps): JSX.Element {
+function FeaturedNewsItem({ title, time, image, category }: NewsItemProps): JSX.Element {
+  return (
+    <div className="relative w-full h-[300px] overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10" />
+      <img
+        src={image}
+        alt={title}
+        width={800}
+        height={400}
+        className="w-full h-full object-cover"
+      />
+      <div className="absolute bottom-0 left-0 right-0 p-6 z-20 text-white">
+        <h1 className="text-xl font-bold mb-2">{title}</h1>
+        <div className="flex items-center space-x-2 text-sm">
+          <span>{formatDistanceToNow(new Date(time))} ago</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function NewsItem({ title, time, image }: NewsItemProps): JSX.Element {
   return (
     <div className="flex items-start space-x-3 hover:bg-gray-200 px-4 py-2">
       <div className="flex-grow">
-        <h2 className="text-lg font-bold text-gray-800">{title}</h2>
+        <h2 className="text-md font-semibold text-gray-800">{title}</h2>
         <div className="flex items-center space-x-2 text-sm text-gray-500">
-          <span>{time}</span>
-          <span>•</span>
-          <span>{category}</span>
-          <span>•</span>
-          <span>{posts} posts</span>
+          <span>{formatDistanceToNow(new Date(time))} ago</span>
         </div>
       </div>
-      <img src={image} alt={title} width={80} height={80} className="rounded-lg" />
+      <img
+        src={image || '/placeholder.svg'}
+        alt={title}
+        width={80}
+        height={80}
+        className="rounded-lg object-cover"
+      />
     </div>
   )
 }

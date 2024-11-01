@@ -44,7 +44,7 @@ const Sidebar = ({ userId }: { userId: string }) => {
         </Link>
         <nav className="space-y-1 mt-2">
           <NavItem icon={<Home size={28} />} label="Home" path="/" />
-          <NavItem icon={<Hash size={28} />} label="Explore" path="/explore" />
+          <NavItem icon={<Hash size={28} />} label="News" path="/explore" />
           <NavItem icon={<Bell size={28} />} label="Notifications" path="/notifications" />
           <NavItem icon={<Mail size={28} />} label="Messages" path="/messages" />
           <NavItem icon={<Bookmark size={28} />} label="Bookmarks" path="/bookmarks" />

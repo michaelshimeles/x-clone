@@ -1,7 +1,16 @@
 import PostInput from '@/components/post-input';
 import TabNavigation from '@/components/tab-navigation';
+import { api } from '@/convex/_generated/api';
+import { auth } from '@clerk/nextjs/server';
+import { preloadQuery } from 'convex/nextjs';
 
 export default async function HomePage() {
+  const { userId } = await auth()
+
+  const preloadedUserInfo: any = await preloadQuery(api.user.readUser, {
+    userId: userId!
+  });
+
   return (
     <div className="border-l border-r border-gray-200 min-h-screen max-w-6xl w-full">
       {/* Sticky Header */}
@@ -13,7 +22,7 @@ export default async function HomePage() {
       <main>
         {/* Post Input */}
         <div className="px-4 py-2 border-b border-gray-200">
-          <PostInput />
+          <PostInput userInfo={preloadedUserInfo?._valueJSON} />
         </div>
 
       </main>
