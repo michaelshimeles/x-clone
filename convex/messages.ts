@@ -157,7 +157,7 @@ export const getMessages = query({
       .withIndex("by_conversation", (q) =>
         q.eq("conversationId", args.conversationId)
       )
-      .order("desc")
+      .order("asc")
       .collect();
 
     return messages;
