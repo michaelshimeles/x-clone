@@ -24,8 +24,8 @@ export default function MessageSection({ userId }: { userId: string }) {
         <header className="flex justify-between items-center p-4 border-b">
           <h1 className="text-xl font-bold">Messages</h1>
           <div className="flex space-x-4">
-            <Settings className="w-6 h-6 text-gray-700 cursor-pointer" />
-            <NewMessageDialog />
+            {/* <Settings className="w-6 h-6 text-gray-700 cursor-pointer" /> */}
+            <NewMessageDialog userId={userId} />
           </div>
         </header>
 
@@ -68,7 +68,7 @@ export default function MessageSection({ userId }: { userId: string }) {
           <p className="text-gray-500">
             Choose from your existing conversations, start a new one, or just keep swimming.
           </p>
-          <NewMessageDialog />
+          <NewMessageDialog userId={userId} />
         </div>
       )}
     </div>

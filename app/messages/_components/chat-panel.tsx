@@ -1,12 +1,14 @@
-import { api } from "@/convex/_generated/api";
-import { useQuery, useMutation } from "convex/react";
-import { formatDistanceToNow } from "date-fns";
-import { useState } from "react";
-
 // app/messages/_components/chat-panel.tsx
+"use client"
+
+import { api } from "@/convex/_generated/api"
+import { useMutation, useQuery } from "convex/react"
+import { useState } from "react"
+import { MessageList } from "./message-list"
+
 interface ChatPanelProps {
-  conversation: any;
-  userId: string;
+  conversation: any
+  userId: string
 }
 
 export function ChatPanel({ conversation, userId }: ChatPanelProps) {
@@ -33,7 +35,7 @@ export function ChatPanel({ conversation, userId }: ChatPanelProps) {
   }
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col h-[calc(100vh-9px)]"> {/* Added fixed height */}
       {/* Chat Header */}
       <div className="border-b p-4">
         <div className="flex items-center space-x-3">
@@ -57,27 +59,10 @@ export function ChatPanel({ conversation, userId }: ChatPanelProps) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages?.map((message) => (
-          <div
-            key={message._id}
-            className={`flex ${message.senderId === userId ? 'justify-end' : 'justify-start'}`}
-          >
-            <div
-              className={`max-w-[70%] rounded-lg p-3 ${
-                message.senderId === userId
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100'
-              }`}
-            >
-              <p>{message.content}</p>
-              <span className="text-xs opacity-70">
-                {formatDistanceToNow(message.createdAt)} ago
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
+      <MessageList
+        messages={messages}
+        userId={userId}
+      />
 
       {/* Message Input */}
       <form onSubmit={handleSend} className="border-t p-4">
