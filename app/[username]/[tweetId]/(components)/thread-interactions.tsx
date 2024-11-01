@@ -73,6 +73,15 @@ export default function ThreadInteractions({ tweet, userId }: ThreadInteractions
       setIsRetweeted(status)
       // Update retweet count immediately
       setRetweetCount((prev: any) => status ? prev + 1 : prev - 1)
+      if (status) {
+        await sendNotification({
+          userId: tweet.userId,      // The tweet author who will receive the notification
+          actorId: userId,    // You (the current user) who performed the like action
+          type: "retweet",
+          tweetId: tweet._id
+        })
+
+      }
       toast.success(status ? "Retweeted" : "Removed Retweet")
     } catch (error) {
       toast.error("Failed to retweet")
@@ -87,13 +96,14 @@ export default function ThreadInteractions({ tweet, userId }: ThreadInteractions
         userId,
         tweetId: tweet._id
       })
+
       setIsLiked(status)
       // Update like count immediately
       setLikeCount((prev: any) => status ? prev + 1 : prev - 1)
       if (status) {
         await sendNotification({
-          userId: userId,
-          actorId: tweet.userId,
+          userId: tweet.userId,      // The tweet author who will receive the notification
+          actorId: userId,    // You (the current user) who performed the like action
           type: "like",
           tweetId: tweet._id
         })
@@ -116,6 +126,7 @@ export default function ThreadInteractions({ tweet, userId }: ThreadInteractions
       setIsBookmarked(status)
       // Update bookmark count immediately
       setBookmarkCount((prev: any) => status ? prev + 1 : prev - 1)
+
       toast.success(status ? "Added to Bookmarks" : "Removed from Bookmarks")
     } catch (error) {
       toast.error("Failed to bookmark tweet")
@@ -153,13 +164,13 @@ export default function ThreadInteractions({ tweet, userId }: ThreadInteractions
         >
           <Repeat2
             className={`w-5 h-5 ${retweetCount > 0 && isRetweeted
-                ? 'fill text-green-500'
-                : 'group-hover:text-green-500'
+              ? 'fill text-green-500'
+              : 'group-hover:text-green-500'
               }`}
           />
           <span className={`text-xs ${retweetCount > 0 && isRetweeted
-              ? 'text-green-500'
-              : 'group-hover:text-green-500'
+            ? 'text-green-500'
+            : 'group-hover:text-green-500'
             }`}>
             {retweetCount}
           </span>
@@ -172,13 +183,13 @@ export default function ThreadInteractions({ tweet, userId }: ThreadInteractions
         >
           <Heart
             className={`w-5 h-5 ${isLiked
-                ? 'fill-current text-pink-500'
-                : 'group-hover:text-pink-500'
+              ? 'fill-current text-pink-500'
+              : 'group-hover:text-pink-500'
               }`}
           />
           <span className={`text-xs ${isLiked
-              ? 'text-pink-500'
-              : 'group-hover:text-pink-500'
+            ? 'text-pink-500'
+            : 'group-hover:text-pink-500'
             }`}>
             {likeCount}
           </span>
@@ -189,8 +200,8 @@ export default function ThreadInteractions({ tweet, userId }: ThreadInteractions
           <button onClick={handleBookmark}>
             <Bookmark
               className={`w-5 h-5 ${isBookmarked
-                  ? 'fill-current text-blue-500'
-                  : 'hover:text-blue-500'
+                ? 'fill-current text-blue-500'
+                : 'hover:text-blue-500'
                 }`}
             />
           </button>

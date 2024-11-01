@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from '@/convex/_generated/api';
+import { useNotification } from "@/utils/notifications";
 import { useUser } from "@clerk/nextjs";
 import { fetchMutation, fetchQuery } from 'convex/nextjs';
 import { useMutation, useQuery } from "convex/react";
@@ -26,6 +27,7 @@ export default function Tweet({ tweet, userProfileId, username, currentUserId }:
   const [isBookmarked, setIsBookmarked] = useState(false);
   const pathname = usePathname();
   const { user } = useUser()
+  const { sendNotification } = useNotification()
 
   // Mutations
   const toggleRetweet = useMutation(api.tweets.toggleRetweet);
@@ -136,6 +138,14 @@ export default function Tweet({ tweet, userProfileId, username, currentUserId }:
       });
       console.log('status', status)
       setIsLiked(status);
+      if (status) {
+        await sendNotification({
+          userId: tweet.userId,      // The tweet author who will receive the notification
+          actorId: currentUserId,    // You (the current user) who performed the like action
+          type: "like",
+          tweetId: tweet._id
+        })
+      }
     } catch (error) {
       toast.error("Failed to like tweet");
     }
