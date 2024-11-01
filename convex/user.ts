@@ -125,3 +125,32 @@ export const updateUser = mutation({
     }
   },
 });
+
+export const searchUsers = query({
+  args: {
+    searchTerm: v.string(),
+    currentUserId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    if (!args.searchTerm) return [];
+
+    const searchTermLower = args.searchTerm.toLowerCase();
+
+    // Get all users except current user
+    const users = await ctx.db
+      .query("users")
+      .filter((q) => q.neq(q.field("userId"), args.currentUserId))
+      .collect();
+
+    // Filter users whose name or username contains the search term
+    return users
+      .filter((user) => {
+        const nameMatch = user.name?.toLowerCase().includes(searchTermLower);
+        const usernameMatch = user.username
+          ?.toLowerCase()
+          .includes(searchTermLower);
+        return nameMatch || usernameMatch;
+      })
+      .slice(0, 10); // Limit to 10 results
+  },
+});

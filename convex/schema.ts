@@ -16,7 +16,11 @@ export default defineSchema({
     bannerImage: v.optional(v.string()),
     profileImageId: v.optional(v.id("_storage")),
     bannerImageId: v.optional(v.id("_storage")),
-  }),
+    searchable: v.optional(v.string()), // Make it optional
+  })
+    .index("by_userId", ["userId"])
+    .index("by_username", ["username"])
+    .index("by_searchable", ["searchable"]), // Add index for search
 
   // convex/schema.ts
   tweets: defineTable({
@@ -87,6 +91,26 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_user_read", ["userId", "read"])
     .index("by_creation", ["createdAt"]),
+
+  conversations: defineTable({
+    participantOneId: v.string(), // First user's ID
+    participantTwoId: v.string(), // Second user's ID
+    lastMessageAt: v.number(), // For sorting conversations
+    createdAt: v.number(),
+  })
+    .index("by_participant_one", ["participantOneId", "lastMessageAt"]) // Find conversations for user one
+    .index("by_participant_two", ["participantTwoId", "lastMessageAt"]) // Find conversations for user two
+    .index("by_participants", ["participantOneId", "participantTwoId"]), // Find specific conversation between two users
+
+  messages: defineTable({
+    conversationId: v.id("conversations"), // Reference to conversations table
+    senderId: v.string(), // ID of user who sent the message
+    content: v.string(), // Message content
+    read: v.boolean(), // Whether message has been read
+    createdAt: v.number(), // Timestamp for ordering
+  })
+    .index("by_conversation", ["conversationId", "createdAt"]) // Get messages for a conversation
+    .index("by_unread", ["conversationId", "read"]), // Get unread messages
 
   follows: defineTable({
     followerId: v.string(), // ID of user who is following

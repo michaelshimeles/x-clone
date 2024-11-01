@@ -1,9 +1,16 @@
 import { auth } from "@clerk/nextjs/server";
 import { NotificationList } from "./_components/notification-list";
+import { preloadQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
 
 export default async function NotificationsPage() {
   const { userId } = await auth();
   if (!userId) return null;
+
+  const preloadedUserInfo: any = await preloadQuery(api.user.readUser, {
+    userId: userId
+  });
+
 
   return (
     <div className=" w-full border-x">
@@ -13,7 +20,7 @@ export default async function NotificationsPage() {
         </div>
       </div>
 
-      <NotificationList userId={userId} />
+      <NotificationList userId={userId} userInfo={preloadedUserInfo?._valueJSON} />
     </div>
   );
 }

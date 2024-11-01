@@ -2,20 +2,23 @@
 'use client'
 
 import { api } from "@/convex/_generated/api"
+import { fetchMutation } from "convex/nextjs"
 import { useQuery } from "convex/react"
 import { useEffect } from "react"
 import { NotificationItem } from "./notification-item"
-import { fetchMutation } from "convex/nextjs"
 
 interface NotificationListProps {
-  userId: string
+  userId: string,
+  userInfo: any
 }
 
-export function NotificationList({ userId }: NotificationListProps) {
+export function NotificationList({ userId, userInfo }: NotificationListProps) {
   // Use the subscription query instead of regular query
   const notifications = useQuery(api.notifications.subscribeToNotifications, {
     userId
   })
+
+
 
   useEffect(() => {
     const markAsRead = async () => {
@@ -42,6 +45,7 @@ export function NotificationList({ userId }: NotificationListProps) {
         <NotificationItem
           key={notification._id}
           notification={notification}
+          userInfo={userInfo}
         />
       ))}
     </div>
