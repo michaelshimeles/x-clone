@@ -21,7 +21,7 @@ export function TweetFeed({ userId }: TweetFeedProps) {
     return (
       <div className="p-8 text-center text-gray-500">
         <p className="text-xl font-semibold mb-2">Welcome to your feed!</p>
-        <p>When you follow people, you'll see their tweets here.</p>
+        <p>When you follow people, you&apos;ll see their tweets here.</p>
       </div>
     );
   }
