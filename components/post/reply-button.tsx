@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { api } from "@/convex/_generated/api"
 import { fetchMutation, fetchQuery } from "convex/nextjs"
-import { AlignLeft, ChevronDown, Globe, Image, MessageCircle, X } from "lucide-react"
+import { ChevronDown, Globe, Image, MessageCircle, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -201,10 +201,10 @@ export default function ReplyButton({ userId }: PostButtonProps) {
                 )}
               </div>
             </div>
-            <div className="flex items-center text-[#1DA1F2] mt-4">
+            {/* <div className="flex items-center text-[#1DA1F2] mt-4">
               <Globe className="h-4 w-4 mr-2" />
               <span className="text-sm">Everyone can reply</span>
-            </div>
+            </div> */}
           </div>
           <div className="flex justify-between items-center px-4 py-3 border-t border-gray-200 bg-white">
             <div className="flex">

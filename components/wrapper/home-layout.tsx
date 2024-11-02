@@ -1,10 +1,10 @@
 "use client"
 import { Input } from '@/components/ui/input'
 import LeftSidebar from '@/components/wrapper/left-sidebar'
-import ExploreSection from '@/components/wrapper/right-sidarbar'
-import React from 'react'
 import { usePathname } from 'next/navigation'
-import { useUser } from '@clerk/nextjs'
+import React from 'react'
+import FollowSuggestions from './right-sidarbar'
+import { SearchUsers } from '../search-user'
 
 
 export default function HomeLayout({
@@ -44,8 +44,8 @@ export default function HomeLayout({
         <LeftSidebar userId={userId!} />
         {children}
         <div className="hidden md:block max-w-[400px] w-full p-4 overflow-y-auto mr-[135px]">
-          <Input className='rounded-full p-6 mb-3 bg-gray-100' placeholder='Search' />
-          <ExploreSection />
+          <SearchUsers />
+          <FollowSuggestions userId={userId!} />
         </div>
       </div>
     </div>

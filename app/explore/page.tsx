@@ -1,5 +1,4 @@
 import { formatDistanceToNow } from 'date-fns'
-import Image from 'next/image'
 import Link from 'next/link'
 
 interface NewsItemProps {
@@ -10,7 +9,9 @@ interface NewsItemProps {
 }
 
 export default async function Explore() {
-  const response = await fetch('https://newsapi.org/v2/top-headlines?country=us&apiKey=366e9399aae1498da8fa1722fff51ce0')
+  const response = await fetch('https://newsapi.org/v2/top-headlines?country=us&apiKey=366e9399aae1498da8fa1722fff51ce0', {
+    cache: "force-cache"
+  })
   const result = await response.json()
 
   return (

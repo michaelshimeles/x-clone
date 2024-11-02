@@ -196,10 +196,10 @@ export default function PostButton({ userId }: PostButtonProps) {
                 )}
               </div>
             </div>
-            <div className="flex items-center text-[#1DA1F2] mt-4">
+            {/* <div className="flex items-center text-[#1DA1F2] mt-4">
               <Globe className="h-4 w-4 mr-2" />
               <span className="text-sm">Everyone can reply</span>
-            </div>
+            </div> */}
           </div>
           <div className="flex justify-between items-center px-4 py-3 border-t border-gray-200 bg-white">
             <div className="flex">

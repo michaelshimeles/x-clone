@@ -35,10 +35,10 @@ export function ChatPanel({ conversation, userId }: ChatPanelProps) {
   }
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-9px)]"> {/* Added fixed height */}
+    <div className="flex-1 flex flex-col h-[calc(100vh-10px)]"> {/* Added fixed height */}
       {/* Chat Header */}
       <div className="border-b p-4">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center h-[36px] space-x-3">
           <img
             src={conversation.participant.profileImage}
             alt=""

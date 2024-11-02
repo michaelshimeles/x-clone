@@ -154,3 +154,34 @@ export const searchUsers = query({
       .slice(0, 10); // Limit to 10 results
   },
 });
+
+export const getFollowSuggestions = query({
+  args: {
+    userId: v.string(),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    // Get all users except current user
+    const allUsers = await ctx.db
+      .query("users")
+      .filter((q) => q.neq(q.field("userId"), args.userId))
+      .collect();
+
+    // Get all followed users
+    const following = await ctx.db
+      .query("follows")
+      .withIndex("by_follower", (q) =>
+        q.eq("followerId", args.userId)
+      )
+      .collect();
+
+    const followingIds = new Set(following.map(f => f.followingId));
+
+    // Filter out users that are already being followed
+    const suggestions = allUsers
+      .filter(user => !followingIds.has(user.userId))
+      .slice(0, args.limit ?? 3);
+
+    return suggestions;
+  },
+});

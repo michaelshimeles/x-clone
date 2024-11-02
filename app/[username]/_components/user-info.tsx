@@ -53,7 +53,7 @@ function FollowList({
   }
 
   return (
-    <div className="divide-y max-h-[60vh] overflow-y-auto">
+    <div className="flex flex-col justify-start gap-3 max-h-[60vh] overflow-y-auto">
       {users.map((follow: any) => (
         <div key={follow.user.userId} className="flex items-center justify-between">
           <Link

@@ -1,6 +1,7 @@
 // convex/tweets.ts
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { Doc } from "./_generated/dataModel";
 
 // convex/tweets.ts
 export const createTweet = mutation({
@@ -214,7 +215,7 @@ export const getLikes = query({
       .order("desc")
       .collect();
 
-    console.log('Retrieved likes:', likes);
+    console.log("Retrieved likes:", likes);
 
     // If we want to get the tweets and user info for each like
     const likesWithDetails = await Promise.all(
@@ -236,7 +237,7 @@ export const getLikes = query({
         return {
           ...tweet,
           userInfo,
-          likedAt: like.createdAt
+          likedAt: like.createdAt,
         };
       })
     );
@@ -448,5 +449,49 @@ export const isBookmarked = query({
       )
       .first();
     return Boolean(bookmark);
+  },
+});
+
+export const getFollowingFeed = query({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Get all users this person follows
+    const following = await ctx.db
+      .query("follows")
+      .withIndex("by_follower", (q) => q.eq("followerId", args.userId))
+      .collect();
+
+    // Include followed users AND current user
+    const followingIds = new Set([
+      ...following.map((f) => f.followingId),
+      args.userId  // Add current user's ID
+    ]);
+
+    // Get all tweets
+    const allTweets = await ctx.db.query("tweets").collect();
+
+    // Filter tweets from followed users and current user, sort by date
+    const tweets = allTweets
+      .filter((tweet) => followingIds.has(tweet.userId))
+      .sort((a, b) => b.createdAt - a.createdAt);
+
+    // Get user info for each tweet
+    const userIds = new Set(tweets.map((tweet) => tweet.userId));
+    const users = await Promise.all(
+      Array.from(userIds).map((userId) =>
+        ctx.db
+          .query("users")
+          .filter((q) => q.eq(q.field("userId"), userId))
+          .first()
+      )
+    );
+
+    // Combine tweets with user info
+    return tweets.map((tweet) => ({
+      ...tweet,
+      user: users.find((user) => user?.userId === tweet.userId),
+    }));
   },
 });

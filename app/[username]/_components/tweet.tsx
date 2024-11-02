@@ -1,6 +1,5 @@
 'use client'
 
-import ReplyButton from "@/components/post/reply-button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -172,7 +171,7 @@ export default function Tweet({ tweet, userProfileId, username, currentUserId }:
       {isRetweet && (
         <div className="flex items-center gap-2 mb-2 pl-12 text-gray-500 text-sm">
           <Repeat2 className="w-4 h-4" />
-          {currentUserId === userProfileId ? <span>You reposted</span> : <span>{username} reposted</span>}
+          {currentUserId === userProfileId && pathname !== "/"  ? <span>You reposted</span> : <span>{username} reposted</span>}
         </div>
       )}
       <div className="w-full mx-auto font-sans">

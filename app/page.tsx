@@ -1,5 +1,5 @@
 import PostInput from '@/components/post-input';
-import TabNavigation from '@/components/tab-navigation';
+import { TweetFeed } from '@/components/tweet-feed';
 import { api } from '@/convex/_generated/api';
 import { auth } from '@clerk/nextjs/server';
 import { preloadQuery } from 'convex/nextjs';
@@ -15,7 +15,7 @@ export default async function HomePage() {
     <div className="border-l border-r border-gray-200 min-h-screen max-w-6xl w-full">
       {/* Sticky Header */}
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm mt-3">
-        <TabNavigation tabs={["For you", "Following"]} />
+        {/* <TabNavigation tabs={["For you", "Following"]} /> */}
       </div>
 
       {/* Main Content */}
@@ -25,6 +25,8 @@ export default async function HomePage() {
           <PostInput userInfo={preloadedUserInfo?._valueJSON} />
         </div>
 
+        {/* Tweet Feed */}
+        <TweetFeed userId={userId!} />
       </main>
     </div>
   )
